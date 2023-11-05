@@ -29,7 +29,7 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 WORKDIR /var/www/html
 
 # 复制应用代码到容器中
-COPY index.php /var/www/html
+COPY . /var/www/html
 
 # 安装项目依赖
 RUN composer install --no-interaction
