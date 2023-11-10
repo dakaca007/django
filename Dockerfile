@@ -11,6 +11,7 @@ WORKDIR /app
 COPY . /app
 
 RUN pip3 install flask
+RUN pip3 install requests
 # 暴露端口
 EXPOSE 80
 
