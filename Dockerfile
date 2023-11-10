@@ -1,44 +1,20 @@
-# 使用官方 PHP 镜像作为基础镜像
-FROM php:7.4-apache
+# 使用官方的CentOS 7镜像作为基础
+FROM centos:7
 
-# 安装常用扩展
-RUN apt-get update && apt-get install -y \
-    git \
-    zip \
-    unzip \
-    curl \
-    libpng-dev \
-    libonig-dev \
-    libxml2-dev \
-    libzip-dev
-
-# 安装 PHP 扩展
-RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip
-
-# 设置 Apache 配置
-COPY apache2.conf /etc/apache2/apache2.conf
-RUN a2enmod rewrite
-
-# 设置 PHP 配置
-COPY php.ini /usr/local/etc/php/php.ini
-
-# 安装 Composer
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+# 安装Python 3和pip
+RUN yum install -y epel-release && yum install -y python3 && yum install -y python3-pip
 
 # 设置工作目录
-WORKDIR /var/www/html
+WORKDIR /app
 
-# 复制应用代码到容器中
-COPY . /var/www/html
+# 将当前目录中的所有文件复制到工作目录
+COPY . /app
 
-# 安装项目依赖
-RUN composer install --no-interaction
-
-# 设置文件权限
-RUN chown -R www-data:www-data /var/www/html/storage
+# 安装Python依赖
+RUN pip3 install -r requirements.txt
 
 # 暴露端口
 EXPOSE 80
 
-# 启动 Apache 服务
-CMD ["apache2-foreground"]
+# 运行应用程序
+CMD ["python3", "app.py"]
