@@ -10,8 +10,6 @@ WORKDIR /app
 # 将当前目录中的所有文件复制到工作目录
 COPY . /app
 
-# 安装Python依赖
-RUN pip3 install -r requirements.txt
 
 # 暴露端口
 EXPOSE 80
