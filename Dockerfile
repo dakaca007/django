@@ -12,7 +12,7 @@ COPY . /app
 
 RUN pip3 install flask
 RUN pip3 install requests
-RUN pip3 install json
+
 # 暴露端口
 EXPOSE 80
 
