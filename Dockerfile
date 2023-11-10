@@ -10,7 +10,7 @@ WORKDIR /app
 # 将当前目录中的所有文件复制到工作目录
 COPY . /app
 
-
+RUN pip3 install flask
 # 暴露端口
 EXPOSE 80
 
