@@ -9,4 +9,4 @@ OPENAI_API_KEY = ""
 # URL = "https://api.openai.com/v1/chat/completions"
 
 # openAi 代理 api
-URL = "https://open.aiproxy.xyz/v1/chat/completions"
+URL = "https://gptkey.nxsir.cn/v1/chat/completions"
