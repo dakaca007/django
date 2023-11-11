@@ -12,7 +12,10 @@ app.config.from_pyfile('settings.py')
 @app.route('/admin')
 def editor():
     return render_template('editor.html')
-
+@app.route('/admin2')
+def editor2():
+    current_directory = os.getcwd()
+    return f"当前文件所在目录：{current_directory}"
 @app.route('/open', methods=['POST'])
 def open_file():
     file_path = request.form['file_path']
