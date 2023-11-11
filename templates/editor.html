@@ -20,6 +20,12 @@
  {% endif %}
           <input type="submit" value="保存">
          </form>
+     <form id="command-form3" method="POST" action="/kill">
+        <input type="submit" value="杀死flask">
+        </form>
+    <form id="command-form4" method="POST" action="/reboot">
+        <input type="submit" value="重启flask">
+        </form>
 {% if error_message %}
             <pre>{{ error_message }}</pre>
         {% endif %}
