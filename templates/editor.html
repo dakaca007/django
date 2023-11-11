@@ -58,21 +58,7 @@
             color: red;
         }
     </style>
-    <script>
-    function htmlEntities(str) {
-        return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-    }
- 
-    function InsertValue() {
-        codeNode = document.getElementById('code')
-        code = codeNode.value;
-        if(code == '') {codeNode.focus(); return;}
-        lang = document.getElementById('lang').value;
-        code = "<pre class='language-" + lang + "'><code class='language-" + lang + "'>" + htmlEntities(code) + "</code></pre>";
-        window.parent.tinyMCE.activeEditor.execCommand('mceInsertContent', 0, code); //获取内容并插入到编辑器
-        window.parent.tinyMCE.activeEditor.windowManager.close(); //关闭对话框
-    }
-    </script>
+   
 </head>
 <body>
 <div class="container">
