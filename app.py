@@ -31,7 +31,7 @@ def open_file():
         return '文件不存在'
     except PermissionError:
         return '无权限访问文件'
- @app.route('/open', methods=['POST'])
+@app.route('/open', methods=['POST'])
 def executeo():
     directory = request.form['file_path']
     try:
