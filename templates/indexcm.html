@@ -5,11 +5,12 @@
 </head>
 <body>
     <h1>Linux控制台终端</h1>
-    <form method="POST" action="/execute">
+    
+   <div id="result-container">
+       <form method="POST" action="/execute">
         <input type="text" name="command" placeholder="输入Linux命令">
         <input type="submit" value="执行">
     </form>
-   <div id="result-container">
     {% if result %}
         <pre>{{ result }}</pre>
     {% endif %}
