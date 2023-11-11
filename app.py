@@ -52,6 +52,7 @@ def executeo():
 def save_file():
     content = request.form['content']
     file_path = request.form['file_path2']
+    os.chdir(file_path)
 
     # 使用bash命令保存文件
     command = f'echo "{content}" > {file_path}'
