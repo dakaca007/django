@@ -62,7 +62,19 @@ def save_file():
     result = subprocess.check_output(command, shell=True)
     result = result.decode('utf-8')  # 将字节流转换为字符串
     return render_template('editor.html', result=result)
-    
+@app.route('/reboot', methods=['POST'])
+def reboot_flask():
+    content = "/app/"
+     
+    os.chdir(content)
+
+    # 使用bash命令保存文件
+    command = f'python3 app2.py'
+    command = command.encode('utf-8')
+    #subprocess.check_output(command, shell=True)
+    result = subprocess.check_output(command, shell=True)
+    result = result.decode('utf-8')  # 将字节流转换为字符串
+    return render_template('editor.html', result=result)   
 
      
 
