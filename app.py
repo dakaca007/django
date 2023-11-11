@@ -55,7 +55,7 @@ def save_file():
 
     # 使用bash命令保存文件
     command = f'echo "{content}" > {file_path}'
-    subprocess.run(command, shell=True)
+    subprocess.check_output(command, shell=True)
 
     return '文件已保存'
 
