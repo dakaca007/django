@@ -101,11 +101,7 @@
  {{ result }}
                </textarea>
 
-                <pre><code class="language-javascript">
-    <textarea name="content" rows="10" cols="50" id="code">      
-        {{ result }}
-    </textarea>
-</code></pre>
+              
 
                 
             </code></pre>
@@ -115,6 +111,13 @@
         </div>
     </form>
     {% endif %}
+
+
+      <pre><code class="language-javascript">
+    <textarea name="content" rows="10" cols="50" id="code">      
+        {{ result }}
+    </textarea>
+</code></pre>
     <form id="command-form3" method="POST" action="/kill">
         <div class="form-group">
             <input type="text" name="jincheng" placeholder="进程ID">
