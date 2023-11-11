@@ -58,9 +58,12 @@ def save_file():
     # 使用bash命令保存文件
     command = f'echo "{content}" > {file_name}'
     #subprocess.check_output(command, shell=True)
+    result = subprocess.check_output(command, shell=True)
+    result = result.decode('utf-8')  # 将字节流转换为字符串
+    return render_template('editor.html', result=result)
     
 
-    return command
+     
 
 @app.route('/delete', methods=['POST'])
 def delete_file():
