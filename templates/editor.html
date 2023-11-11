@@ -8,17 +8,7 @@
         <input type="text" name="file_path" placeholder="文件路径">
         <input type="submit" value="打开文件">
     </form>
-
-    <form action="/save" method="post">
-        <textarea name="content" rows="10" cols="50">{{ content }}</textarea>
-        <input type="hidden" name="file_path" value="{{ file_path }}">
-        <br>
-        <input type="submit" value="保存文件">
-    </form>
-
-    <form action="/delete" method="post">
-        <input type="hidden" name="file_path" value="{{ file_path }}">
-        <input type="submit" value="删除文件">
-    </form>
+<textarea name="content" rows="10" cols="50">{{ content }}</textarea>
+    
 </body>
 </html>
