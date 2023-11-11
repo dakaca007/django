@@ -9,8 +9,40 @@ app = Flask(__name__)
 
 # 从配置文件中settings加载配置
 app.config.from_pyfile('settings.py')
+@app.route('/')
+def editor():
+    return render_template('editor.html')
 
-@app.route("/", methods=["GET"])
+@app.route('/open', methods=['POST'])
+def open_file():
+    file_path = request.form['file_path']
+    if os.path.exists(file_path):
+        with open(file_path, 'r') as file:
+            content = file.read()
+        return render_template('editor.html', content=content)
+    else:
+        return '文件不存在'
+
+@app.route('/save', methods=['POST'])
+def save_file():
+    content = request.form['content']
+    file_path = request.form['file_path']
+
+    with open(file_path, 'w') as file:
+        file.write(content)
+
+    return '文件已保存'
+
+@app.route('/delete', methods=['POST'])
+def delete_file():
+    file_path = request.form['file_path']
+    if os.path.exists(file_path):
+        os.remove(file_path)
+        return '文件已删除'
+    else:
+        return '文件不存在'
+        
+@app.route("/chat", methods=["GET"])
 def index():
     return render_template("chat.html")
 @app.route("/m", methods=["GET"])
