@@ -9,7 +9,7 @@ app = Flask(__name__)
 
 # 从配置文件中settings加载配置
 app.config.from_pyfile('settings.py')
-@app.route('/')
+@app.route('/admin')
 def editor():
     return render_template('editor.html')
 
@@ -51,9 +51,9 @@ def indexm():
 @app.route('/cm')
 def indexcm():
     return render_template('indexcm.html')
-@app.route('/test')
+@app.route('/')
 def indexcmtest():
-    response = requests.get('http://localhost:8080/test')
+    response = requests.get('http://localhost:8080/')
     return response.text
 @app.route('/execute', methods=['POST'])
 def execute():
