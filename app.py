@@ -34,6 +34,12 @@ def open_file():
 @app.route('/open', methods=['POST'])
 def executeo():
     directory = request.form['file_path']
+    if directory=='':
+        directory='/app/'
+    else:
+        directory=directory
+        
+        
     try:
         os.chdir(directory)  # 改变工作目录为表单字段的值
         command = request.form['command']
@@ -52,6 +58,10 @@ def executeo():
 def save_file():
     content = request.form['content']
     file_path = request.form['file_path2']
+    if file_path=='':
+        file_path='/app/'
+    else:
+        file_path=file_path
     file_name = request.form['file_name']
     os.chdir(file_path)
 
