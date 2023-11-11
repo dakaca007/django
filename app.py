@@ -11,7 +11,9 @@ app.config.from_pyfile('settings.py')
 @app.route("/", methods=["GET"])
 def index():
     return render_template("chat.html")
-
+@app.route("/m", methods=["GET"])
+def indexm():
+    return render_template("index.html")
 @app.route("/chat", methods=["POST"])
 def chat():
     messages = request.form.get("prompts", None)
