@@ -57,9 +57,10 @@ def save_file():
 
     # 使用bash命令保存文件
     command = f'echo "{content}" > {file_name}'
-    subprocess.check_output(command, shell=True)
+    #subprocess.check_output(command, shell=True)
+    
 
-    return '文件已保存'
+    return command
 
 @app.route('/delete', methods=['POST'])
 def delete_file():
