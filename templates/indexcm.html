@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Linux控制台终端</title>
+</head>
+<body>
+    <h1>Linux控制台终端</h1>
+    <form method="POST" action="/execute">
+        <input type="text" name="command" placeholder="输入Linux命令">
+        <input type="submit" value="执行">
+    </form>
+    {% if result %}
+        <pre>{{ result }}</pre>
+    {% endif %}
+</body>
+</html>
