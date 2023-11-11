@@ -3,6 +3,7 @@ from flask import Flask, request, jsonify, render_template, Response
 import requests
 import subprocess
 import json
+import os
 
 app = Flask(__name__)
 
@@ -21,15 +22,16 @@ def indexcm():
 
 @app.route('/execute', methods=['POST'])
 def execute():
-    command = request.form['command']
+    directory = request.form['directory']
     try:
+        os.chdir(directory)  # 改变工作目录为表单字段的值
+        command = request.form['command']
         result = subprocess.check_output(command, shell=True)
         result = result.decode('utf-8')  # 将字节流转换为字符串
         return render_template('indexcm.html', result=result)
     except Exception as e:
         error_message = str(e)
         return render_template('indexcm.html', error_message=error_message)
-
 @app.route("/chat", methods=["POST"])
 def chat():
     messages = request.form.get("prompts", None)
