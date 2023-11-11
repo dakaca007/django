@@ -14,7 +14,7 @@ RUN pip3 install flask
 RUN pip3 install requests
 
 # 暴露端口
-EXPOSE 80
+EXPOSE 80 81 8080 8001 22
 
 # 运行应用程序
 CMD ["python3", "app.py"]
