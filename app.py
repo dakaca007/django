@@ -16,13 +16,14 @@ def editor():
 @app.route('/open', methods=['POST'])
 def open_file():
     file_path = request.form['file_path']
-    os.chdir(file_path)
     if os.path.exists(file_path):
+        os.chdir(file_path)  # 更改当前工作目录
         with open(file_path, 'r') as file:
             content = file.read()
         return render_template('editor.html', content=content)
     else:
         return '文件不存在'
+
 
 @app.route('/save', methods=['POST'])
 def save_file():
