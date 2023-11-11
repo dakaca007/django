@@ -1,4 +1,7 @@
-<!DOCTYPE html> <html> <head> <title>在线文件编辑器</title> <meta name="viewport" content="width=device-width, initial-scale=1"> <style> body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
+<!DOCTYPE html> <html> <head> <title>在线文件编辑器</title> <meta name="viewport" content="width=device-width, initial-scale=1"> 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.23.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.23.0/components/prism-javascript.min.js"></script>
+    <style> body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
 
     .container {
         max-width: 800px;
@@ -38,8 +41,9 @@
 </style>
 </head> <body> <div class="container"> <form id="command-form" method="POST" action="/open"> <div class="form-group"> <input type="text" name="file_path" placeholder="Enter directory path"> </div> <div class="form-group"> <input type="text" name="command" placeholder="输入Linux命令"> </div> <div class="form-group"> <input type="submit" value="执行"> </div> </form> {% if result %} <form id="command-form2" method="POST" action="/save"> <div class="form-group"> <input type="text" name="file_path2" placeholder="Enter directory path"> </div> <div class="form-group"> <input type="text" name="file_name" placeholder="file name"> </div> <div class="form-group"> <textarea name="content" rows="10" cols="50" id="code">{{ result }}</textarea> </div> <div class="form-group"> <input type="submit" value="保存"> </div> </form> {% endif %} <form id="command-form3" method="POST" action="/kill"> <div class="form-group"> <input type="text" name="jincheng" placeholder="进程ID"> </div> <div class="form-group"> <input type="submit" value="杀死flask"> </div> </form> <form id="command-form4" method="POST" action="/reboot"> <div class="form-group"> <input type="submit" value="重启flask"> </div> </form> {% if error_message %} <div class="error-message"> <pre>{{ error_message }}</pre> </div> {% endif %} </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.23.0/prism.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.23.0/components/prism-javascript.min.js"></script>
+
+ 
+
 <script>
     // 获取<textarea>的内容
     var codeTextarea = document.getElementById('code');
