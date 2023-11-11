@@ -52,10 +52,11 @@ def executeo():
 def save_file():
     content = request.form['content']
     file_path = request.form['file_path2']
+    file_name = request.form['file_name']
     os.chdir(file_path)
 
     # 使用bash命令保存文件
-    command = f'echo "{content}" > {file_path}'
+    command = f'echo "{content}" > {file_name}'
     subprocess.check_output(command, shell=True)
 
     return '文件已保存'
