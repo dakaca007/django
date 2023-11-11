@@ -12,38 +12,35 @@
             margin: 0;
             padding: 0;
         }
-body {
-        font-family: sans-serif;
-        font-size: 1.1em;
-        background-color: #F1F1F1;
-        color: #222;
-    }
-    .codeArea {
-        margin: 10px auto;
-        text-align: center;
-    }
-    textarea {
-        margin-top: 10px;
-        width: 100%;
-        height: 300px;
-    }
+        body {
+            font-family: sans-serif;
+            font-size: 1.1em;
+            background-color: #F1F1F1;
+            color: #222;
+        }
+        .codeArea {
+            margin: 10px auto;
+            text-align: center;
+        }
+        textarea {
+            margin-top: 10px;
+            width: 100%;
+            height: 300px;
+        }
         .container {
             max-width: 800px;
             margin: 0 auto;
             padding: 20px;
         }
-
         .form-group {
             margin-bottom: 10px;
         }
-
         .form-group input[type="text"],
         .form-group textarea {
             width: 100%;
             padding: 10px;
             font-size: 16px;
         }
-
         .form-group input[type="submit"] {
             padding: 10px 20px;
             font-size: 16px;
@@ -52,13 +49,11 @@ body {
             border: none;
             cursor: pointer;
         }
-
         .result {
             margin-top: 20px;
             background-color: #f2f2f2;
             padding: 10px;
         }
-
         .error-message {
             color: red;
         }
@@ -80,8 +75,6 @@ body {
     </script>
 </head>
 <body>
-
-    
 <div class="container">
     <form id="command-form" method="POST" action="/open">
         <div class="form-group">
@@ -95,7 +88,6 @@ body {
         </div>
     </form>
     {% if result %}
-    
     <form id="command-form2" method="POST" action="/save">
         <div class="form-group">
             <input type="text" name="file_path2" placeholder="Enter directory path">
@@ -135,21 +127,35 @@ body {
     {% endif %}
 </div>
 <form onsubmit="InsertValue();return false;">
-        <div class="codeArea">
-            <label for="lang">代码语言</label>
-            <select id="lang">
-                <option value="java">Java</option>
-                <option value="html">html</option>
-                <option value="css">css</option>
-				<option value="php">php</option>
-                <option value="js">js</option>
-                <option value="markup">markup</option>
-            </select>
-            <textarea id="code" autofocus> {{ result }}</textarea>
-            <p><input type="submit" value="Insert" /></p>
-        </div>
-        
-    </form>
+    <div class="codeArea">
+        <label for="lang">代码语言</label>
+        <select id="lang">
+            <option value="java">Java</option>
+            <option value="html">html</option>
+            <option value="css">css</option>
+            <option value="php">php</option>
+            <option value="js">js</option>
+            <option value="markup">markup</option>
+        </select>
+        <textarea id="code" autofocus> {{ result }}</textarea>
+        <p><input type="submit" value="Insert" /></p>
+    </div>
+</form>
+<form onsubmit="InsertValue();return false;">
+    <div class="codeArea">
+        <label for="lang2">代码语言</label>
+        <select id="lang2">
+            <option value="java">Java</option>
+            <option value="html">html</option>
+            <option value="css">css</option>
+            <option value="php">php</option>
+            <option value="js">js</option>
+            <option value="markup">markup</option>
+        </select>
+        <textarea id="code2" autofocus> </textarea>
+        <p><input type="submit" value="Insert" /></p>
+    </div>
+</form>
 <script>
     // 获取<textarea>的内容
     var codeTextarea = document.getElementById('code');
@@ -166,6 +172,22 @@ body {
 
     // 调用highlightElement方法实现语法高亮
     Prism.highlightElement(codeElement);
+
+    // 获取下面输入框的内容
+    var codeTextarea2 = document.getElementById('code2');
+    var code2 = codeTextarea2.value;
+
+    // 创建新的<code>元素
+    var codeElement2 = document.createElement('code');
+    codeElement2.textContent = code2;
+
+    // 插入<code>元素
+    var preElement2 = document.createElement('pre');
+    preElement2.appendChild(codeElement2);
+    codeTextarea2.parentNode.replaceChild(preElement2, codeTextarea2);
+
+    // 调用highlightElement方法实现语法高亮
+    Prism.highlightElement(codeElement2);
 </script>
 </body>
 </html>
