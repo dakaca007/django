@@ -9,7 +9,9 @@ app = Flask(__name__)
 
 # 从配置文件中settings加载配置
 app.config.from_pyfile('settings.py')
-
+@app.route('/test')
+def indextest():
+    return render_template('indextest.html')
 @app.route("/", methods=["GET"])
 def index():
     return render_template("chat.html")
