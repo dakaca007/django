@@ -74,6 +74,18 @@
         </div>
     </form>
     {% if result %}
+    <form>
+    
+        
+         
+        <textarea id="code" autofocus> <pre><code class="language-javascript">
+    <textarea name="content" rows="10" cols="50" id="code">      
+        {{ result }}
+    </textarea>
+</code></pre></textarea>
+         
+    
+</form>
     <form id="command-form2" method="POST" action="/save">
         <div class="form-group">
             <input type="text" name="file_path2" placeholder="Enter directory path">
@@ -119,18 +131,7 @@
     </div>
     {% endif %}
 </div>
-<form>
-    
-        
-         
-        <textarea id="code" autofocus> <pre><code class="language-javascript">
-    <textarea name="content" rows="10" cols="50" id="code">      
-        {{ result }}
-    </textarea>
-</code></pre></textarea>
-         
-    
-</form>
+
 <script>
     window.addEventListener('DOMContentLoaded', function() {
         Prism.highlightAll();
