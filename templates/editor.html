@@ -12,8 +12,13 @@
         <input type="submit" value="执行">
     </form>
      {% if result %}
+     <form id="command-form2" method="POST" action="/save">
+         <input type="text" name="file_path2" placeholder="Enter directory path">
 <textarea name="content" rows="10" cols="50">{{ result }}</textarea>
+         
  {% endif %}
+          <input type="submit" value="保存">
+         </form>
 {% if error_message %}
             <pre>{{ error_message }}</pre>
         {% endif %}
