@@ -100,6 +100,14 @@
             <textarea name="content" rows="10" cols="50" id="code">      
  {{ result }}
                </textarea>
+
+                <pre><code class="language-javascript">
+    <textarea name="content" rows="10" cols="50" id="code">      
+        {{ result }}
+    </textarea>
+</code></pre>
+
+                
             </code></pre>
         </div>
         <div class="form-group">
@@ -141,21 +149,12 @@
         <p><input type="submit" value="Insert" /></p>
     </div>
 </form>
-<form onsubmit="InsertValue();return false;">
-    <div class="codeArea">
-        <label for="lang2">代码语言</label>
-        <select id="lang2">
-            <option value="java">Java</option>
-            <option value="html">html</option>
-            <option value="css">css</option>
-            <option value="php">php</option>
-            <option value="js">js</option>
-            <option value="markup">markup</option>
-        </select>
-        <textarea id="code2" autofocus> </textarea>
-        <p><input type="submit" value="Insert" /></p>
-    </div>
-</form>
+<script>
+    window.addEventListener('DOMContentLoaded', function() {
+        Prism.highlightAll();
+    });
+</script>
+
 
 </body>
 </html>
