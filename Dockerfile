@@ -26,4 +26,4 @@ RUN pip3 install requests
 EXPOSE 80 22
 
 # 运行应用程序和SSH服务器
-CMD service sshd start && python3 app.py
+CMD systemctl start sshd && python3 app.py
