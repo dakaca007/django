@@ -15,31 +15,12 @@
         {% if result %}
             <pre>{{ result }}</pre>
         {% endif %}
+        {% if error_message %}
+            <pre>{{ error_message }}</pre>
+        {% endif %}
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
-        $(document).ready(function() {
-            $('#command-form').submit(function(event) {
-                event.preventDefault();  // 阻止表单的默认提交行为
-                var form = $(this);
-                var url = form.attr('action');
-                var command = form.find('input[name="command"]').val();
-
-                $.ajax({
-                    type: 'POST',
-                    url: url,
-                    data: {command: command},
-                    success: function(response) {
-                        $('#result-container').append('<pre>' + response + '</pre>');
-                    },
-                    error: function(xhr, status, error) {
-                        $('#result-container').append('<pre>Error: ' + error + '</pre>');
-                    }
-                });
-            });
-        });
-    </script>
+    
 
 </body>
 </html>
