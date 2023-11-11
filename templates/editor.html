@@ -156,38 +156,6 @@
         <p><input type="submit" value="Insert" /></p>
     </div>
 </form>
-<script>
-    // 获取<textarea>的内容
-    var codeTextarea = document.getElementById('code');
-    var code = codeTextarea.value;
 
-    // 创建新的<code>元素
-    var codeElement = document.createElement('code');
-    codeElement.textContent = code;
-
-    // 插入<code>元素
-    var preElement = document.createElement('pre');
-    preElement.appendChild(codeElement);
-    codeTextarea.parentNode.replaceChild(preElement, codeTextarea);
-
-    // 调用highlightElement方法实现语法高亮
-    Prism.highlightElement(codeElement);
-
-    // 获取下面输入框的内容
-    var codeTextarea2 = document.getElementById('code2');
-    var code2 = codeTextarea2.value;
-
-    // 创建新的<code>元素
-    var codeElement2 = document.createElement('code');
-    codeElement2.textContent = code2;
-
-    // 插入<code>元素
-    var preElement2 = document.createElement('pre');
-    preElement2.appendChild(codeElement2);
-    codeTextarea2.parentNode.replaceChild(preElement2, codeTextarea2);
-
-    // 调用highlightElement方法实现语法高亮
-    Prism.highlightElement(codeElement2);
-</script>
 </body>
 </html>
