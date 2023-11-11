@@ -19,7 +19,10 @@ def indexm():
 @app.route('/cm')
 def indexcm():
     return render_template('indexcm.html')
-
+@app.route('/test')
+def indexcmtest():
+    response = requests.get('http://localhost:8080/test')
+    return response.text
 @app.route('/execute', methods=['POST'])
 def execute():
     directory = request.form['directory']
