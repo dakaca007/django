@@ -23,7 +23,8 @@ def indexcm():
 def execute():
     command = request.form['command']
     try:
-        result = subprocess.check_output(command, shell=True, text=True)
+        result = subprocess.check_output(command, shell=True)
+        result = result.decode('utf-8')  # 将字节流转换为字符串
         return render_template('indexcm.html', result=result)
     except Exception as e:
         error_message = str(e)
