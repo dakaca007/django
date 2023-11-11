@@ -19,13 +19,16 @@ def editor2():
 @app.route('/open', methods=['POST'])
 def open_file():
     file_path = request.form['file_path']
-    if os.path.exists(file_path):
+    
+    if os.path.exists(file_path) and os.access(file_path, os.R_OK):
         os.chdir(file_path)  # 更改当前工作目录
         with open(file_path, 'r') as file:
             content = file.read()
         return render_template('editor.html', content=content)
     else:
-        return '文件不存在'
+        return '文件不存在或无法访问'
+        
+     
 
 
 @app.route('/save', methods=['POST'])
