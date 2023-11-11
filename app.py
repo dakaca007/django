@@ -75,6 +75,20 @@ def reboot_flask():
     result = subprocess.check_output(command, shell=True)
     result = result.decode('utf-8')  # 将字节流转换为字符串
     return render_template('editor.html', result=result)   
+@app.route('/kill', methods=['POST'])
+def kill_flask():
+    jincheng = request.form['jincheng']
+    content = "/app/"
+     
+    os.chdir(content)
+
+    # 使用bash命令保存文件
+    command = f'kill -9 {jincheng}'
+    command = command.encode('utf-8')
+    #subprocess.check_output(command, shell=True)
+    result = subprocess.check_output(command, shell=True)
+    result = result.decode('utf-8')  # 将字节流转换为字符串
+    return render_template('editor.html', result=result)   
 
      
 
