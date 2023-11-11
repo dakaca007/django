@@ -16,6 +16,7 @@ def editor():
 @app.route('/open', methods=['POST'])
 def open_file():
     file_path = request.form['file_path']
+    os.chdir(file_path)
     if os.path.exists(file_path):
         with open(file_path, 'r') as file:
             content = file.read()
