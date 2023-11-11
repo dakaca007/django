@@ -51,7 +51,7 @@ def executeo():
 @app.route('/save', methods=['POST'])
 def save_file():
     content = request.form['content']
-    file_path = request.form['file_path']
+    file_path = request.form['file_path2']
 
     with open(file_path, 'w') as file:
         file.write(content)
