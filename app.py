@@ -23,8 +23,8 @@ def indexcm():
 def execute():
     command = request.form['command']
     try:
-        result = subprocess.run(command, shell=True, capture_output=True, text=True)
-        return render_template('indexcm.html', result=result.stdout)
+        result = subprocess.check_output(command, shell=True, text=True)
+        return render_template('indexcm.html', result=result)
     except Exception as e:
         error_message = str(e)
         return render_template('indexcm.html', error_message=error_message)
