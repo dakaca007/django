@@ -99,11 +99,7 @@
     {% endif %}
 
 
-      <pre><code class="language-javascript">
-    <textarea name="content" rows="10" cols="50" id="code">      
-        {{ result }}
-    </textarea>
-</code></pre>
+      
     <form id="command-form3" method="POST" action="/kill">
         <div class="form-group">
             <input type="text" name="jincheng" placeholder="进程ID">
@@ -123,20 +119,17 @@
     </div>
     {% endif %}
 </div>
-<form onsubmit="InsertValue();return false;">
-    <div class="codeArea">
-        <label for="lang">代码语言</label>
-        <select id="lang">
-            <option value="java">Java</option>
-            <option value="html">html</option>
-            <option value="css">css</option>
-            <option value="php">php</option>
-            <option value="js">js</option>
-            <option value="markup">markup</option>
-        </select>
-        <textarea id="code" autofocus> {{ result }}</textarea>
-        <p><input type="submit" value="Insert" /></p>
-    </div>
+<form>
+    
+        
+         
+        <textarea id="code" autofocus> <pre><code class="language-javascript">
+    <textarea name="content" rows="10" cols="50" id="code">      
+        {{ result }}
+    </textarea>
+</code></pre></textarea>
+         
+    
 </form>
 <script>
     window.addEventListener('DOMContentLoaded', function() {
