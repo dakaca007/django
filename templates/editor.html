@@ -2,27 +2,19 @@
 <html>
 <head>
     <title>在线文件编辑器</title>
-    <script> function checkFilePath() { var filePath = document.getElementById("file_path").value; if (filePath == "") { document.getElementById("file_path").value = "/app/"; } }
-
-    function checkFilePath2() {
-        var filePath2 = document.getElementById("file_path2").value;
-        if (filePath2 == "") {
-            document.getElementById("file_path2").value = "/app/";
-        }
-    }
-</script>
+     
 </head>
 <body>
     
 
      <form id="command-form" method="POST" action="/open">
-        <input type="text" name="file_path" placeholder="Enter directory path"  id="file_path" onblur="checkFilePath()>
+        <input type="text" name="file_path" placeholder="Enter directory path">
         <input type="text" name="command" placeholder="输入Linux命令">
         <input type="submit" value="执行">
     </form>
      {% if result %}
      <form id="command-form2" method="POST" action="/save">
-         <input type="text" name="file_path2" placeholder="Enter directory path" id="file_path2" onblur="checkFilePath2()>
+         <input type="text" name="file_path2" placeholder="Enter directory path">
          <input type="text" name="file_name" placeholder="file name">
 <textarea name="content" rows="10" cols="50">{{ result }}</textarea>
          
