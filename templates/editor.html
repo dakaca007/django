@@ -64,7 +64,14 @@
         <pre>{{ error_message }}</pre>
     </div>
     {% endif %}
+     <form id="myForm">
+         <input type="text" name="file_path2" placeholder="Enter directory path">
+  <input type="text" name="filename2" placeholder="file name">
+         
+  <button type="submit">提交</button>
+     </form>
 </div>
+    
 <div class="container">
     <form id="command-form3" method="POST" action="/kill">
         <div class="form-group">
@@ -80,6 +87,30 @@
         </div>
     </form>
 </div>
+<script>
+   
+var form = document.getElementById('myForm');
+form.addEventListener('submit', function(event) {
+  event.preventDefault(); // 阻止表单默认提交行为
 
+  var divContent = document.querySelector('.result').innerText;
+var newContent = document.querySelector('[name="file_path2"]').value;
+    var newfilename = document.querySelector('[name="filename2"]').value;
+  var formData = new FormData();
+  formData.append('content', divContent);
+formData.append('file_path2',newContent);
+    formData.append('newfilename',newfilename);
+
+  var xhr = new XMLHttpRequest();
+  xhr.open('POST', '/save', true);
+  xhr.onreadystatechange = function() {
+    if (xhr.readyState === 4 && xhr.status === 200) {
+      console.log('数据上传成功');
+    }
+  };
+  xhr.send(formData);
+});
+
+</script>
 </body>
 </html>
