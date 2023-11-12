@@ -9,6 +9,7 @@ import os
 app = Flask(__name__)
 class MyForm(Form):
     text = TextField('请输入文本：')
+    
 # 从配置文件中settings加载配置
 app.config.from_pyfile('set.py')
 @app.route('/admin')
