@@ -42,7 +42,7 @@ def executeo():
         
     try:
         os.chdir(directory)  # 改变工作目录为表单字段的值
-        command = request.form.get['command']
+        command = request.form['command']
         
         result = subprocess.check_output(command, shell=True)
         result = result.decode('utf-8')  # 将字节流转换为字符串
@@ -62,7 +62,7 @@ def save_file():
         file_path='/app/'
     else:
         file_path=file_path
-    file_name = request.form.get['filename2']
+    file_name = request.form['filename2']
     os.chdir(file_path)
 
     # 使用bash命令保存文件
@@ -87,7 +87,7 @@ def reboot_flask():
     return render_template('editor.html', result=result)   
 @app.route('/kill', methods=['POST'])
 def kill_flask():
-    jincheng = request.form.get['jincheng']
+    jincheng = request.form['jincheng']
     content = "/app/"
      
     os.chdir(content)
