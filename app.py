@@ -8,7 +8,7 @@ import os
 app = Flask(__name__)
 
 # 从配置文件中settings加载配置
-app.config.from_pyfile('settings.py')
+app.config.from_pyfile('set.py')
 @app.route('/admin')
 def editor():
     return render_template('editor.html')
