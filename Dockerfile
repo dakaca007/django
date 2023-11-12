@@ -17,7 +17,7 @@ RUN pip3 install flask
 RUN pip3 install requests
 
 RUN pip3 install wtforms
-RUN 
+
 
 
 # 暴露端口
