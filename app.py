@@ -44,6 +44,8 @@ def open_file():
         return '无权限访问文件'
 @app.route('/open', methods=['POST'])
 def executeo():
+
+    form=MyForm()
     directory = request.form['file_path']
     if directory=='':
         directory='/app/'
@@ -57,7 +59,7 @@ def executeo():
         
         result = subprocess.check_output(command, shell=True)
         result = result.decode('utf-8')  # 将字节流转换为字符串
-        return render_template('editor.html', result=result)
+        return render_template('editor2.html', result=result,form=form)
     except Exception as e:
         error_message = str(e)
         return render_template('indexcm.html', error_message=error_message)   
