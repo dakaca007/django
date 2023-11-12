@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
 from flask import Flask, request, jsonify, render_template, Response
+from wtforms import Form, TextField, SubmitField
 import requests
 import subprocess
 import json
 import os
 
 app = Flask(__name__)
-
+class MyForm(Form):
+    text = TextField('请输入文本：')
 # 从配置文件中settings加载配置
 app.config.from_pyfile('set.py')
 @app.route('/admin')
@@ -18,13 +20,14 @@ def editor2():
     return f"当前文件所在目录：{current_directory}"
 @app.route('/opens', methods=['POST'])
 def open_file():
+    form = MyForm()
     file_path = request.form['file_path']
     try:
         if os.path.exists(file_path) and os.access(file_path, os.R_OK):
             #os.chdir(file_path)  # 更改当前工作目录
             with open(file_path, 'r') as file:
                 content = file.read()
-            return render_template('editor.html', content=content)
+            return render_template('editor.html', content=content,form=form)
         else:
             return '文件不存在或无法访问'
     except FileNotFoundError:
@@ -56,13 +59,27 @@ def executeo():
 
 @app.route('/save', methods=['POST'])
 def save_file():
-    content = request.form['content']
-    file_path = request.form['file_path2']
+    form = MyForm(request.form)
+    if form.validate():
+        text1 = form.text1.data
+        text2 = form.text2.data
+        text3 = form.text3.data
+        return f'提交的文本为：{text}'
+    else:
+        return '表单验证失败'
+    #content = request.form['content']
+    content=text3
+
+
+    
+    #file_path = request.form['file_path2']
+    file_path = text1
     if file_path=='':
         file_path='/app/'
     else:
         file_path=file_path
-    file_name = request.form['filename2']
+    #file_name = request.form['filename2']
+    file_name = text2
     os.chdir(file_path)
 
     # 使用bash命令保存文件
