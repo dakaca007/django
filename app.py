@@ -2,7 +2,7 @@
 from flask import Flask, request, jsonify, render_template, Response
 
 from flask_wtf import Form
-from wtforms import TextField, SubmitField
+from wtforms.fields import TextField, SubmitField
 import requests
 import subprocess
 import json
