@@ -122,7 +122,7 @@ def indexcm():
     return render_template('indexcm.html')
 @app.route('/')
 def indexcmtest():
-    response = requests.get('http://localhost:8080/')
+    response = requests.get('http://localhost:8000/')
     return response.text
 @app.route('/execute', methods=['POST'])
 def execute():
