@@ -62,7 +62,7 @@ def save_file():
         file_path='/app/'
     else:
         file_path=file_path
-    file_name = request.form['file_name']
+    file_name = request.form['filename2']
     os.chdir(file_path)
 
     # 使用bash命令保存文件
