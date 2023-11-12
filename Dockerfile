@@ -19,7 +19,7 @@ RUN pip3 install PyMySQL
 RUN pip3 install numpy
 RUN pip3 install beautifulsoup4
 RUN pip3 install wtforms
-
+RUN pip3 install flask-wtf
 
 
 # 暴露端口
