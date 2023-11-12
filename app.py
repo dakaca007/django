@@ -121,6 +121,11 @@ def indexm():
 def indexcm():
     return render_template('indexcm.html')
 @app.route('/')
+def indexeee():
+    # 调用PHP脚本并获取输出
+    result = subprocess.check_output(['php', 'index.php'])
+    return result
+@app.route('/eee')
 def indexcmtest():
     response = requests.get('http://localhost:8000/')
     return response.text
