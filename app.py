@@ -3,6 +3,7 @@ from flask import Flask, request, jsonify, render_template, Response
 
 
 from wtforms import Form, StringField, SubmitField
+from wtforms.validators import DataRequired, Length
 import requests
 import subprocess
 import json
@@ -10,9 +11,9 @@ import os
 
 app = Flask(__name__)
 class MyForm(Form):
-    text1 = StringField('目录', validators=[...])
-    text2 = StringField('文件名', validators=[...])
-    text3 = StringField('内容', validators=[...])
+    text1 = StringField('目录', validators=[DataRequired()])
+    text2 = StringField('文件名', validators=[DataRequired()])
+    text3 = StringField('内容', validators=[DataRequired()])
     submit = SubmitField('提交')
     
 # 从配置文件中settings加载配置
