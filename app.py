@@ -20,21 +20,22 @@ class MyForm(Form):
 app.config.from_pyfile('set.py')
 @app.route('/admin')
 def editor():
-    return render_template('editor.html')
+    form = MyForm()
+    return render_template('editor.html',form=form)
 @app.route('/admin2')
 def editor2():
     current_directory = os.getcwd()
     return f"当前文件所在目录：{current_directory}"
 @app.route('/opens', methods=['POST'])
 def open_file():
-    form = MyForm()
+    
     file_path = request.form['file_path']
     try:
         if os.path.exists(file_path) and os.access(file_path, os.R_OK):
             #os.chdir(file_path)  # 更改当前工作目录
             with open(file_path, 'r') as file:
                 content = file.read()
-            return render_template('editor.html', content=content,form=form)
+            return render_template('editor.html', content=content)
         else:
             return '文件不存在或无法访问'
     except FileNotFoundError:
