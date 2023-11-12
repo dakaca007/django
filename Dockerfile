@@ -3,6 +3,7 @@ FROM centos:7
 
 # 安装Python 3和pip
 RUN yum install -y epel-release && yum install -y python3 && yum install -y python3-pip
+RUN yum install -y php php-cli php-fpm php-mysqlnd php-pdo php-gd php-mbstring php-xml php-json php-zip
 # 安装gcc编译器
 RUN yum install -y gcc
 
@@ -15,10 +16,9 @@ COPY . /app
 RUN pip3 install flask
 RUN pip3 install requests
 RUN pip3 install PyMySQL
-RUN pip3 install django
 RUN pip3 install numpy
 RUN pip3 install beautifulsoup4
-RUN django-admin startproject myapp .
+
 
 
 # 暴露端口
