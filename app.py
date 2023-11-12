@@ -56,7 +56,7 @@ def executeo():
 
 @app.route('/save', methods=['POST'])
 def save_file():
-    content = request.form.get['content']
+    content = request.form['content']
     file_path = request.form['file_path2']
     if file_path=='':
         file_path='/app/'
