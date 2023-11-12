@@ -99,7 +99,7 @@ var newContent = document.querySelector('[name="file_path2"]').value;
   var formData = new FormData();
   formData.append('content', divContent);
 formData.append('file_path2',newContent);
-    formData.append('newfilename',newfilename);
+    formData.append('filename2',newfilename);
 
   var xhr = new XMLHttpRequest();
   xhr.open('POST', '/save', true);
