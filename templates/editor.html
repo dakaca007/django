@@ -64,12 +64,15 @@
         <pre>{{ error_message }}</pre>
     </div>
     {% endif %}
-     <form id="myForm">
-         <input type="text" name="file_path2" placeholder="Enter directory path">
-  <input type="text" name="filename2" placeholder="file name">
-         
-  <button type="submit">提交</button>
-     </form>
+     
+
+<form id="myForm" action="{{ url_for('save_file') }}" method="post">
+        {{ form.text1.label }}: {{ form.text1() }}<br>
+     {{ form.text2.label }}: {{ form.text2() }}<br>
+        {{ form.text3.label }}: {{ form.text3() }}<br>
+        {{ form.submit() }}
+    </form>
+    
 </div>
     
 <div class="container">
@@ -94,12 +97,12 @@ form.addEventListener('submit', function(event) {
   event.preventDefault(); // 阻止表单默认提交行为
 
   var divContent = document.querySelector('.result').innerText;
-var newContent = document.querySelector('[name="file_path2"]').value;
-    var newfilename = document.querySelector('[name="filename2"]').value;
+var newContent = document.querySelector('[name="text1"]').value;
+    var newfilename = document.querySelector('[name="text2"]').value;
   var formData = new FormData();
-  formData.append('content', divContent);
-formData.append('file_path2',newContent);
-    formData.append('filename2',newfilename);
+  formData.append('text3', divContent);
+formData.append('text1',newContent);
+    formData.append('text2',newfilename);
 
   var xhr = new XMLHttpRequest();
   xhr.open('POST', '/save', true);
