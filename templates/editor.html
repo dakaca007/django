@@ -3,9 +3,7 @@
 <head>
     <title>在线文件编辑器</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.23.0/themes/prism.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.23.0/prism.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.23.0/components/prism-javascript.min.js"></script>
+    
     <script src="prism-live.js?load=css,html,javascript"></script>
     <style>
         body {
@@ -78,13 +76,13 @@
     <form id="xs">
     
         
-          <pre><code class="language-javascript">
+          <pre> 
         <textarea class="prism-live language-javascript" id="xs_code" autofocus>
           
         {{ result }}
             
     </textarea>
-              </code>
+             
 </pre>
          
     
@@ -134,11 +132,7 @@
 </div>
 
 <script>
-    window.addEventListener('DOMContentLoaded', function() {
-        Prism.highlightAll();
-    });
-
-
+ 
     /**
 	Prism Live: Code editor based on Prism.js
 	Works best in Chrome. Currently only very basic support in other browsers (no snippets, no shortcuts)
