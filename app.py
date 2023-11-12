@@ -18,7 +18,7 @@ def editor2():
     return f"当前文件所在目录：{current_directory}"
 @app.route('/opens', methods=['POST'])
 def open_file():
-    file_path = request.form.get['file_path']
+    file_path = request.form['file_path']
     try:
         if os.path.exists(file_path) and os.access(file_path, os.R_OK):
             #os.chdir(file_path)  # 更改当前工作目录
@@ -33,7 +33,7 @@ def open_file():
         return '无权限访问文件'
 @app.route('/open', methods=['POST'])
 def executeo():
-    directory = request.form.get['file_path']
+    directory = request.form['file_path']
     if directory=='':
         directory='/app/'
     else:
@@ -57,7 +57,7 @@ def executeo():
 @app.route('/save', methods=['POST'])
 def save_file():
     content = request.form.get['content']
-    file_path = request.form.get['file_path2']
+    file_path = request.form['file_path2']
     if file_path=='':
         file_path='/app/'
     else:
@@ -104,7 +104,7 @@ def kill_flask():
 
 @app.route('/delete', methods=['POST'])
 def delete_file():
-    file_path = request.form.get['file_path']
+    file_path = request.form['file_path']
     if os.path.exists(file_path):
         os.remove(file_path)
         return '文件已删除'
@@ -131,7 +131,7 @@ def indexcmtest():
     return response.text
 @app.route('/execute', methods=['POST'])
 def execute():
-    directory = request.form.get['directory']
+    directory = request.form['directory']
     try:
         os.chdir(directory)  # 改变工作目录为表单字段的值
         command = request.form['command']
