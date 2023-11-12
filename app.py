@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from flask import Flask, request, jsonify, render_template, Response
-from wtforms import Form, TextField, SubmitField
+from wtforms import TextField, SubmitField
+from flask_wtf import Form
 import requests
 import subprocess
 import json
