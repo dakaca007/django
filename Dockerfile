@@ -24,6 +24,9 @@ RUN pip3 install beautifulsoup4
 
 # 暴露端口
 EXPOSE 80 8080 8000 22
+RUN django-admin startproject project_name .
 
 # 运行应用程序
 CMD ["python3", "app.py"]
+# 运行Django开发服务器
+CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
