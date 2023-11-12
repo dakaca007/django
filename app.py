@@ -70,11 +70,11 @@ def executeo():
 @app.route('/save', methods=['POST'])
 def save_file():
     form = MyForm(request.form)
-    if form.validate():
+    if form.validate_on_submit():
         text1 = form.text1.data
         text2 = form.text2.data
         text3 = form.text3.data
-        return f'提交的文本为：{text}'
+        return f'提交的文本为：{text3}'
     else:
         return '表单验证失败'
     #content = request.form['content']
