@@ -12,6 +12,15 @@ COPY . /app
 
 RUN pip3 install flask
 RUN pip3 install requests
+RUN pip3 install PyMySQL
+RUN pip3 install flask_sqlalchemy
+RUN pip3 install Flask-Login
+RUN pip3 install Flask-WTF
+RUN pip3 install django
+RUN pip3 install numpy
+RUN pip3 install beautifulsoup4
+
+
 
 # 暴露端口
 EXPOSE 80 8080 8000 22
