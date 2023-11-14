@@ -30,7 +30,18 @@ def list_files(directory):
 
 
 
-
+@app.route('/new', methods=['GET', 'POST'])
+def new_file():
+    if request.method == 'POST':
+        filename = request.form['filename']
+        content = request.form['content']
+        # 保存新建的文件到指定路径
+        file_path = os.path.join(app.root_path, 'static', filename)
+        with open(file_path, 'w', encoding='utf-8') as file:
+            file.write(content)
+        return redirect('/upload')  # 重定向到/upload路由
+    else:
+        return render_template('newfile.html')
 @app.route('/upload', methods=['GET', 'POST'])
 def upload_file():
     if request.method == 'POST':
