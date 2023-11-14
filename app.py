@@ -1,5 +1,5 @@
 ﻿# -*- coding: utf-8 -*-
-from flask import Flask, request, jsonify, render_template, Response
+from flask import Flask, request, jsonify, render_template, Response,redirect
 
 
 from wtforms import Form, StringField, SubmitField
