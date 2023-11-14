@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 from flask import Flask, request, jsonify, render_template, Response
 
 
@@ -18,6 +18,11 @@ class MyForm(Form):
     
 # 从配置文件中settings加载配置
 app.config.from_pyfile('set.py')
+@app.route('/admins')
+def editors():
+    
+    return render_template('editors.html')
+
 @app.route('/admin')
 def editor():
     
