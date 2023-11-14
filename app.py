@@ -9,7 +9,7 @@ import subprocess
 import json
 import os
 from werkzeug.utils import secure_filename
-
+import sys
 app = Flask(__name__, static_folder='static', static_url_path='/static')
 class MyForm(Form):
     text1 = StringField('目录', validators=[DataRequired()])
@@ -41,6 +41,11 @@ def upload_file():
         if file:
             # 保存上传的文件到指定路径
             filename = secure_filename(file.filename)
+            # 使用 latin-1 编码处理文件名
+            if sys.version_info.major < 3:
+                filename = filename.decode('utf-8').encode('latin-1')
+            else:
+                filename = filename.encode('latin-1').decode('latin-1')
             file.save(os.path.join(app.root_path, 'static', filename))
             return redirect('/upload')
     else:
