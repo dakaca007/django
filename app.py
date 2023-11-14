@@ -193,7 +193,7 @@ def edit_file(filename):
         return render_template('edit.html', filename=filename, content=content)
 
 @app.route('/delete/<path:filename>', methods=['GET', 'POST'])
-def delete_file(filename):
+def delete_file2(filename):
     file_path = os.path.join(app.root_path, 'static', filename)
     if request.method == 'POST':
         os.remove(file_path)
