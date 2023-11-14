@@ -39,52 +39,7 @@
     </style>
 </head>
 <body>
-<div class="container">
-    <div class="result" contenteditable="true">
-        {% if result %}
-        <pre><code class="prism language-javascript">{{ result }}</code></pre>
-        {% endif %}
-    </div>
-    
-</div>
-<div class="container">
-    <form id="command-form" method="POST" action="/open">
-        <div class="form-group">
-            <input type="text" name="file_path" placeholder="Enter directory path">
-        </div>
-        <div class="form-group">
-            <input type="text" name="command" placeholder="输入Linux命令">
-        </div>
-        <div class="form-group">
-            <input type="submit" value="执行">
-        </div>
-    </form>
-    {% if error_message %}
-    <div class="error-message">
-        <pre>{{ error_message }}</pre>
-    </div>
-    {% endif %}
-     
-
-
-    
-</div>
-    
-<div class="container">
-    <form id="command-form3" method="POST" action="/kill">
-        <div class="form-group">
-            <input type="text" name="jincheng" placeholder="进程ID">
-        </div>
-        <div class="form-group">
-            <input type="submit" value="杀死flask">
-        </div>
-    </form>
-    <form id="command-form4" method="POST" action="/reboot">
-        <div class="form-group">
-            <input type="submit" value="重启flask">
-        </div>
-    </form>
-</div>
+ 成功
 
 </body>
 </html>
