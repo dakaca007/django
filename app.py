@@ -8,6 +8,8 @@ import requests
 import subprocess
 import json
 import os
+import sys
+sys.setdefaultencoding('utf-8')
 
 app = Flask(__name__, static_folder='static', static_url_path='/static')
 class MyForm(Form):
