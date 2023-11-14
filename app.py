@@ -47,7 +47,7 @@ def upload_file():
             return redirect('/upload')
     else:
         # 获取static目录下的所有文件和子目录
-        file_list_html = list_files(os.path.join(app.root_path, 'app'))
+        file_list_html = list_files(os.path.join(app.root_path, 'static'))
         # 构建完整的HTML页面
         return render_template('upload.html', file_list_html=file_list_html)
 
