@@ -9,24 +9,28 @@ import subprocess
 import json
 import os
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='static', static_url_path='/static')
 class MyForm(Form):
     text1 = StringField('目录', validators=[DataRequired()])
     text2 = StringField('文件名', validators=[DataRequired()])
     text3 = StringField('内容', validators=[DataRequired()])
     submit = SubmitField('提交')
-    
+def list_files(directory):
+    file_list_html = '<ul>'
+    for root, dirs, files in os.walk(directory):
+        for file in files:
+            # 构建文件链接
+            file_path = os.path.relpath(os.path.join(root, file), directory)
+            file_url = f"/static/{file_path}"
+            edit_url = f"/edit/{file_path}"
+            delete_url = f"/delete/{file_path}"
+            rename_url = f"/rename/{file_path}"  # 添加重命名链接
+            file_list_html += f'<li><a href="{file_url}">{file_path}</a> <a href="{edit_url}">编辑</a> <a href="{delete_url}">删除</a> <a href="{rename_url}">重命名</a></li>'
+    file_list_html += '</ul>'
+    return file_list_html   
 # 从配置文件中settings加载配置
 app.config.from_pyfile('set.py')
-@app.route('/admins')
-def editors():
-    
-    return render_template('editors.html')
-@app.route('/adminss')
-def editorss():
-    
-    return render_template('editors.html')
-
+ 
 @app.route('/admin')
 def editor():
     
@@ -108,6 +112,9 @@ def save_file():
     result = subprocess.check_output(command, shell=True)
     result = result.decode('utf-8')  # 将字节流转换为字符串
     return render_template('editor.html', result=result)
+
+
+
 @app.route('/reboot', methods=['POST'])
 def reboot_flask():
     content = "/app/"
@@ -121,6 +128,9 @@ def reboot_flask():
     result = subprocess.check_output(command, shell=True)
     result = result.decode('utf-8')  # 将字节流转换为字符串
     return render_template('editor.html', result=result)   
+
+
+
 @app.route('/kill', methods=['POST'])
 def kill_flask():
     jincheng = request.form['jincheng']
@@ -147,15 +157,74 @@ def delete_file():
     else:
         return '文件不存在'
         
-@app.route("/", methods=["GET"])
+@app.route("/")
 def index():
-    return render_template("chat.html")
-@app.route("/m", methods=["GET"])
-def indexm():
     return render_template("index.html")
-@app.route('/cm')
-def indexcm():
-    return render_template('indexcm.html')
+
+
+
+
+
+@app.route('/upload', methods=['GET', 'POST'])
+def upload_file():
+    if request.method == 'POST':
+        file = request.files['file']
+        if file:
+            # 保存上传的文件到指定路径
+            file.save(os.path.join(app.root_path, 'static', file.filename))
+            return redirect('/upload')
+    else:
+        # 获取static目录下的所有文件和子目录
+        file_list_html = list_files(os.path.join(app.root_path, 'static'))
+        # 构建完整的HTML页面
+        return render_template('upload.html', file_list_html=file_list_html)
+
+@app.route('/edit/<path:filename>', methods=['GET', 'POST'])
+def edit_file(filename):
+    file_path = os.path.join(app.root_path, 'static', filename)
+    if request.method == 'POST':
+        content = request.form['content']
+        with open(file_path, 'w') as file:
+            file.write(content)
+        return redirect('/upload')  # 重定向到/upload路由
+    else:
+        with open(file_path, 'r') as file:
+            content = file.read()
+        return render_template('edit.html', filename=filename, content=content)
+
+@app.route('/delete/<path:filename>', methods=['GET', 'POST'])
+def delete_file(filename):
+    file_path = os.path.join(app.root_path, 'static', filename)
+    if request.method == 'POST':
+        os.remove(file_path)
+        return redirect('/upload')  # 重定向到/upload路由
+    else:
+        return render_template('delete.html', filename=filename)
+@app.route('/rename/<path:filename>', methods=['GET', 'POST'])
+def rename_file(filename):
+    file_path = os.path.join(app.root_path, 'static', filename)
+    if request.method == 'POST':
+        new_filename = request.form.get('new_filename')
+        new_file_path = os.path.join(app.root_path, 'static', new_filename)
+        os.rename(file_path, new_file_path)
+        return redirect('/upload')  # 重定向到文件上传页面
+    else:
+        return render_template('rename.html', filename=filename)
+
+
+
+@app.route('/api', methods=['POST'])
+def api():
+    data = request.get_json()
+    text = data['text']
+    response = {
+        'text': text
+    }
+    return jsonify(response)
+
+
+
+
 @app.route("/chat", methods=["POST"])
 def chat():
     messages = request.form.get("prompts", None)

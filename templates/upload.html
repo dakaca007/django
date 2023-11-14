@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>文件上传</title>
+    <style>
+        /* 响应式样式 */
+        @media (max-width: 1000px) {
+            h1 {
+                font-size: 90px;
+            }
+            body,h2 {
+                font-size: 50px;
+            }
+            .container {
+                max-width: 100%;
+            }
+            form {
+    transform: scale(3);
+    transform-origin: top left;
+}
+
+        }
+        .container {
+            margin: 0 auto;
+            padding: 20px;
+            max-width: 800px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>我的网盘</h1>
+        <form method="post" enctype="multipart/form-data">
+            <input type="file" name="file">
+            <input type="submit" value="上传">
+        </form>
+        </div>
+        <br/>
+        <div class="container">
+        <h2>文件列表</h2>
+        {{ file_list_html | safe }}
+    </div>
+</body>
+</html>

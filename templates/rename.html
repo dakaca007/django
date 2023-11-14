@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>重命名文件</title>
+
+</head>
+<body>
+    <h1>重命名文件</h1>
+    <form method="POST" action="/rename/{{ filename }}">
+        <label for="new_filename">新文件名：</label>
+        <input type="text" id="new_filename" name="new_filename" required>
+        <input type="submit" value="重命名">
+    </form>
+</body>
+</html>
