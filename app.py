@@ -47,7 +47,7 @@ def open_file():
     try:
         if os.path.exists(file_path) and os.access(file_path, os.R_OK):
             #os.chdir(file_path)  # 更改当前工作目录
-            with open(file_path, 'r') as file:
+            with open(file_path, 'r',encoding='utf-8') as file:
                 content = file.read()
             return render_template('editor2.html', content=content,form=form)
         else:
@@ -186,11 +186,11 @@ def edit_file(filename):
     file_path = os.path.join(app.root_path, 'static', filename)
     if request.method == 'POST':
         content = request.form['content']
-        with open(file_path, 'w') as file:
+        with open(file_path, 'w',encoding='utf-8') as file:
             file.write(content)
         return redirect('/upload')  # 重定向到/upload路由
     else:
-        with open(file_path, 'r') as file:
+        with open(file_path, 'r',encoding='utf-8') as file:
             content = file.read()
         return render_template('edit.html', filename=filename, content=content)
 
