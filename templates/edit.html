@@ -1,4 +1,7 @@
-<!doctype html>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.23.0/themes/prism.min.css">
@@ -34,13 +37,38 @@
 <h1>编辑文件：{{ filename }}</h1>
 
 <div class=container contenteditable="true">
-<form method="post">
+<pre><code class="prism language-javascript">{{ content }}</code></pre>
 
-  <textarea name="content" rows="10" cols="80"><pre><code class="prism language-javascript">{{ content }}</code></pre></textarea>
+    </div>
+
+
+
+<form id='myForm' method="post">
+
+  <textarea name="content" rows="10" cols="80"></textarea>
   <br>
   <input type="submit" value="保存">
 </form>
-</div>
+
+
+
+
 <script>
-    Prism.highlightAll();
-</script>
+
+    document.getElementById("myForm").addEventListener("submit", function(event) {
+  event.preventDefault(); // 阻止默认的提交行为
+
+  var container = document.querySelector(".container");
+  var content = container.textContent; // 获取container的内容
+
+  document.querySelector("textarea[name='content']").value = content; // 将内容赋值给content的值
+
+  // 可以在这里进行其他操作，比如保存内容或发送到服务器
+
+  // 最后手动提交表单
+  this.submit();
+});
+        Prism.highlightAll();
+    </script>
+</body>
+</html>
