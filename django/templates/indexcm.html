@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Linux控制台终端</title>
+</head>
+<body>
+    <h1>Linux控制台终端</h1>
+    
+    <form id="command-form" method="POST" action="/execute">
+        <input type="text" name="directory" placeholder="Enter directory path">
+        <input type="text" name="command" placeholder="输入Linux命令">
+        <input type="submit" value="执行">
+    </form>
+
+    <div id="result-container">
+        {% if result %}
+            <pre>{{ result }}</pre>
+        {% endif %}
+        {% if error_message %}
+            <pre>{{ error_message }}</pre>
+        {% endif %}
+    </div>
+
+    
+
+</body>
+</html>
