@@ -18,10 +18,11 @@ def list_files(directory):
         for file in files:
             # 构建文件链接
             file_path = os.path.relpath(os.path.join(root, file), directory)
-            file_url = f"/static/{file_path}"
-            edit_url = f"/edit/{file_path}"
-            delete_url = f"/delete/{file_path}"
-            rename_url = f"/rename/{file_path}"  # 添加重命名链接
+            file_name = os.path.basename(file_name)
+            file_url = f"/static/{file_name}"
+            edit_url = f"/edit/{file_name}"
+            delete_url = f"/delete/{file_name}"
+            rename_url = f"/rename/{file_name}"  # 添加重命名链接
             file_list_html += f'<li><a href="{file_url}">{file_path}</a> <a href="{edit_url}">编辑</a> <a href="{delete_url}">删除</a> <a href="{rename_url}">重命名</a></li>'
     file_list_html += '</ul>'
     return file_list_html   
