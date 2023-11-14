@@ -1,4 +1,9 @@
 <!doctype html>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.23.0/themes/prism.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.23.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.23.0/components/prism-javascript.min.js"></script>
 <style>
         /* 响应式样式 */
         @media (max-width: 1000px) {
@@ -24,10 +29,14 @@
         }
     </style>
 <title>编辑文件</title>
+
+
 <h1>编辑文件：{{ filename }}</h1>
-<div class=container>
+
+<div class=container contenteditable="true">
 <form method="post">
-  <textarea name="content" rows="10" cols="80">{{ content }}</textarea>
+
+  <textarea name="content" rows="10" cols="80"><pre><code class="prism language-javascript">{{ content }}</code></pre></textarea>
   <br>
   <input type="submit" value="保存">
 </form>

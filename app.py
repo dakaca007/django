@@ -11,11 +11,7 @@ import os
 from werkzeug.utils import secure_filename
 import sys
 app = Flask(__name__, static_folder='static', static_url_path='/static')
-class MyForm(Form):
-    text1 = StringField('目录', validators=[DataRequired()])
-    text2 = StringField('文件名', validators=[DataRequired()])
-    text3 = StringField('内容', validators=[DataRequired()])
-    submit = SubmitField('提交')
+ 
 def list_files(directory):
     file_list_html = '<ul>'
     for root, dirs, files in os.walk(directory):
@@ -107,131 +103,11 @@ def api():
 # 从配置文件中settings加载配置
 app.config.from_pyfile('set.py')
  
-@app.route('/admin')
-def editor():
-    
-    return render_template('editor.html')
-@app.route('/admin2')
-def editor2():
-    current_directory = os.getcwd()
-    return f"当前文件所在目录：{current_directory}"
-@app.route('/opens', methods=['POST'])
-def open_file():
-    form = MyForm()
-    file_path = request.form['file_path']
-    try:
-        if os.path.exists(file_path) and os.access(file_path, os.R_OK):
-            #os.chdir(file_path)  # 更改当前工作目录
-            with open(file_path, 'r',encoding='utf-8') as file:
-                content = file.read()
-            return render_template('editor2.html', content=content,form=form)
-        else:
-            return '文件不存在或无法访问'
-    except FileNotFoundError:
-        return '文件不存在'
-    except PermissionError:
-        return '无权限访问文件'
-@app.route('/open', methods=['POST'])
-def executeo():
-
-    form=MyForm()
-    directory = request.form['file_path']
-    if directory=='':
-        directory='/app/'
-    else:
-        directory=directory
-        
-        
-    try:
-        os.chdir(directory)  # 改变工作目录为表单字段的值
-        command = request.form['command']
-        
-        result = subprocess.check_output(command, shell=True)
-        result = result.decode('utf-8')  # 将字节流转换为字符串
-        return render_template('editor2.html', result=result,form=form)
-    except Exception as e:
-        error_message = str(e)
-        return render_template('indexcm.html', error_message=error_message)   
-        
-     
-
-
-@app.route('/save', methods=['POST'])
-def save_file():
-    form = MyForm(request.form)
-    if form.validate_on_submit():
-        text1 = form.text1.data
-        text2 = form.text2.data
-        text3 = form.text3.data
-        return f'提交的文本为：{text3}'
-    else:
-        return '表单验证失败'
-    #content = request.form['content']
-    content=text3
-
-
-    
-    #file_path = request.form['file_path2']
-    file_path = text1
-    if file_path=='':
-        file_path='/app/'
-    else:
-        file_path=file_path
-    #file_name = request.form['filename2']
-    file_name = text2
-    os.chdir(file_path)
-
-    # 使用bash命令保存文件
-    command = f'echo "{content}" > {file_name}'
-    command = command.encode('utf-8')
-    #subprocess.check_output(command, shell=True)
-    result = subprocess.check_output(command, shell=True)
-    result = result.decode('utf-8')  # 将字节流转换为字符串
-    return render_template('editor.html', result=result)
-
-
-
-@app.route('/reboot', methods=['POST'])
-def reboot_flask():
-    content = "/app/"
-     
-    os.chdir(content)
-
-    # 使用bash命令保存文件
-    command = f'python3 app2.py'
-    command = command.encode('utf-8')
-    #subprocess.check_output(command, shell=True)
-    result = subprocess.check_output(command, shell=True)
-    result = result.decode('utf-8')  # 将字节流转换为字符串
-    return render_template('editor.html', result=result)   
-
-
-
-@app.route('/kill', methods=['POST'])
-def kill_flask():
-    jincheng = request.form['jincheng']
-    content = "/app/"
-     
-    os.chdir(content)
-
-    # 使用bash命令保存文件
-    command = f'kill -9 {jincheng}'
-    command = command.encode('utf-8')
-    #subprocess.check_output(command, shell=True)
-    result = subprocess.check_output(command, shell=True)
-    result = result.decode('utf-8')  # 将字节流转换为字符串
-    return render_template('editor.html', result=result)   
+ 
+ 
 
      
-
-@app.route('/delete', methods=['POST'])
-def delete_file():
-    file_path = request.form['file_path']
-    if os.path.exists(file_path):
-        os.remove(file_path)
-        return '文件已删除'
-    else:
-        return '文件不存在'
+ 
         
 @app.route("/")
 def index():
