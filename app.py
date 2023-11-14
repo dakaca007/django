@@ -171,7 +171,7 @@ def upload_file():
         file = request.files['file']
         if file:
             # 保存上传的文件到指定路径
-            file.save(os.path.join(app.root_path, 'static', file.filename.encode('utf-8').decode('utf-8')))
+            file.save(os.path.join(app.root_path, 'static', str(file.filename.encode('utf-8').decode('utf-8'))))
             return redirect('/upload')
     else:
         # 获取static目录下的所有文件和子目录
