@@ -22,6 +22,10 @@ app.config.from_pyfile('set.py')
 def editors():
     
     return render_template('editors.html')
+@app.route('/adminss')
+def editorss():
+    
+    return render_template('editors.html')
 
 @app.route('/admin')
 def editor():
