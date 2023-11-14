@@ -8,8 +8,7 @@ import requests
 import subprocess
 import json
 import os
-import sys
-sys.setdefaultencoding('utf-8')
+from werkzeug.utils import secure_filename
 
 app = Flask(__name__, static_folder='static', static_url_path='/static')
 class MyForm(Form):
@@ -173,7 +172,8 @@ def upload_file():
         file = request.files['file']
         if file:
             # 保存上传的文件到指定路径
-            file.save(os.path.join(app.root_path, 'static', str(file.filename.encode('utf-8').decode('utf-8'))))
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(app.root_path, 'static', filename))
             return redirect('/upload')
     else:
         # 获取static目录下的所有文件和子目录
