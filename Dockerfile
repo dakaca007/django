@@ -12,12 +12,12 @@ WORKDIR /app
 
 # 将当前目录中的所有文件复制到工作目录
 COPY . /app
+ 
+RUN pip3 install -i https://pypi.tuna.tsinghua.edu.cn/simple flask
+RUN pip3 install -i https://pypi.tuna.tsinghua.edu.cn/simple requests
+RUN pip3 install -i https://pypi.tuna.tsinghua.edu.cn/simple Werkzeug
 
-RUN pip3 install flask
-RUN pip3 install requests
-RUN pip3 install Werkzeug
-
-RUN pip3 install wtforms
+RUN pip3 install -i https://pypi.tuna.tsinghua.edu.cn/simple wtforms
 
 
 
