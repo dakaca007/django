@@ -37,7 +37,7 @@ def user_list():
     cursor = conn.cursor()
     # 执行SQL查询
     cursor.execute("SELECT * FROM user")
-    data = cursor.fetchall()
+    data = list(cursor.fetchall())
     
      
     
