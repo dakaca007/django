@@ -49,9 +49,9 @@ host = 'mysql.sqlpub.com'
 port = 3306
 
 if test_mysql_connection(host, port):
-    print("MySQL数据库连接成功！")
+    print("true！")
 else:
-    print("MySQL数据库连接失败！")
+    print("flase！")
 @app.route("/")
 def index():
     return render_template("index.html")
