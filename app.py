@@ -25,8 +25,8 @@ app.config['MYSQL_DB'] = 'dakaca'
 @app.route("/")
 def index():
     return render_template("index.html")
-@app.route("/test")
-def test():
+@app.route("/user_list")
+def user_list():
     # 创建数据库连接
     conn = pymysql.connect(
         host=app.config['MYSQL_HOST'],
@@ -40,20 +40,12 @@ def test():
     cursor.execute("SELECT * FROM user")
     data = cursor.fetchall()
     
-    # 处理查询结果
-    result = []
-    for row in data:
-        result.append({
-            'id': row[0],
-            'first_name': row[1],
-            'last_name':row[2],
-            'email': row[3]
-        })
+     
     
     # 关闭游标和数据库连接
     cursor.close()
     conn.close()
-    return {'data': result}
+    return render_template("user_list.html", users=data)
 @app.route("/add_user", methods=["POST"])
 def add_user():
     # 获取POST请求中的数据
