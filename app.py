@@ -10,7 +10,7 @@ import json
 import os
 from werkzeug.utils import secure_filename
 import sys
-import mysql.connector
+
 app = Flask(__name__, static_folder='static', static_url_path='/static')
 cnx = mysql.connector.connect(
     user='dakaca007',
