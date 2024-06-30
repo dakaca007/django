@@ -179,7 +179,7 @@ def get_user(user_id):
             'last_name': data[2],
             'email': data[3]
         }
-        return jsonify(result)
+        return json.dumps(result, ensure_ascii=False)  # 禁止使用 ASCII 编码
     else:
         return "User not found"
 if __name__ == '__main__':
