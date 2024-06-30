@@ -114,33 +114,38 @@ def delete_user(user_id):
 
 @app.route("/update_user/<int:user_id>", methods=["POST"])
 def update_user(user_id):
-    # 获取POST请求中的数据
-    first_name = request.form.get("first_name")
-    last_name = request.form.get("last_name")
-    email = request.form.get("email")
+    if request.method == "POST":
+        # 获取POST请求中的数据
+        first_name = request.form.get("first_name")
+        last_name = request.form.get("last_name")
+        email = request.form.get("email")
 
-    # 创建数据库连接
-    conn = pymysql.connect(
-        host=app.config['MYSQL_HOST'],
-        user=app.config['MYSQL_USER'],
-        password=app.config['MYSQL_PASSWORD'],
-        db=app.config['MYSQL_DB']
-    )
-    
-    # 创建游标
-    cursor = conn.cursor()
+        # 创建数据库连接
+        conn = pymysql.connect(
+            host=app.config['MYSQL_HOST'],
+            user=app.config['MYSQL_USER'],
+            password=app.config['MYSQL_PASSWORD'],
+            db=app.config['MYSQL_DB']
+        )
 
-    # 执行更新操作
-    cursor.execute("UPDATE user SET first_name = %s, last_name = %s, email = %s WHERE id = %s", (first_name, last_name, email, user_id))
+        # 创建游标
+        cursor = conn.cursor()
 
-    # 提交事务
-    conn.commit()
+        # 执行更新操作
+        cursor.execute("UPDATE user SET first_name = %s, last_name = %s, email = %s WHERE id = %s", (first_name, last_name, email, user_id))
 
-    # 关闭游标和数据库连接
-    cursor.close()
-    conn.close()
+        # 提交事务
+        conn.commit()
 
-    return render_template("update_user.html", user_id=user_id)
+        # 关闭游标和数据库连接
+        cursor.close()
+        conn.close()
+
+        # 重定向到用户列表或其他页面
+        return redirect(url_for("user_list"))
+    else:
+        # 返回带有用户ID的模板，用于显示更新用户信息的表单
+        return render_template("update_user.html", user_id=user_id)
 @app.route("/get_user/<int:user_id>", methods=["GET"])
 def get_user(user_id):
     # 创建数据库连接
