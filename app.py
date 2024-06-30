@@ -96,7 +96,7 @@ def delete_user(user_id):
     # 关闭游标和数据库连接
     cursor.close()
     conn.close()
-    return "User deleted successfully"
+    return redirect("/user_list")
  
 @app.route("/update_user/<int:user_id>", methods=["GET","POST"])
 def update_user(user_id):
