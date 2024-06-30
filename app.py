@@ -31,7 +31,8 @@ def user_list():
         host=app.config['MYSQL_HOST'],
         user=app.config['MYSQL_USER'],
         password=app.config['MYSQL_PASSWORD'],
-        db=app.config['MYSQL_DB']
+        db=app.config['MYSQL_DB'],
+        charset='utf8'
     )   
     # 创建游标
     cursor = conn.cursor()
@@ -69,7 +70,8 @@ def add_user():
         host=app.config['MYSQL_HOST'],
         user=app.config['MYSQL_USER'],
         password=app.config['MYSQL_PASSWORD'],
-        db=app.config['MYSQL_DB']
+        db=app.config['MYSQL_DB'],
+        charset='utf8'
     )
     
     # 创建游标
@@ -93,7 +95,8 @@ def delete_user(user_id):
         host=app.config['MYSQL_HOST'],
         user=app.config['MYSQL_USER'],
         password=app.config['MYSQL_PASSWORD'],
-        db=app.config['MYSQL_DB']
+        db=app.config['MYSQL_DB'],
+        charset='utf8'
     )
     
     # 创建游标
@@ -125,7 +128,8 @@ def update_user(user_id):
             host=app.config['MYSQL_HOST'],
             user=app.config['MYSQL_USER'],
             password=app.config['MYSQL_PASSWORD'],
-            db=app.config['MYSQL_DB']
+            db=app.config['MYSQL_DB'],
+            charset='utf8'
         )
 
         # 创建游标
@@ -153,7 +157,8 @@ def get_user(user_id):
         host=app.config['MYSQL_HOST'],
         user=app.config['MYSQL_USER'],
         password=app.config['MYSQL_PASSWORD'],
-        db=app.config['MYSQL_DB']
+        db=app.config['MYSQL_DB'],
+        charset='utf8'
     )
     
     # 创建游标
