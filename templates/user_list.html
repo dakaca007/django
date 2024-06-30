@@ -5,15 +5,6 @@
      
 </head>
 <body>
-<ul>
-    {% for user in users %}
-        <li>
-            {{ user.first_name }} {{ user.last_name }} -
-            -{{ user.id }}
-            
-        </li>
-    {% endfor %}
-</ul>
- 
+ {{user_list_html}}
 </body>
 </html>
