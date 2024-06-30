@@ -112,7 +112,7 @@ def delete_user(user_id):
     return "User deleted successfully"
  
 
-@app.route("/update_user/<int:user_id>", methods=["POST"])
+@app.route("/update_user/<int:user_id>", methods=["GET","POST"])
 def update_user(user_id):
     if request.method == "POST":
         # 获取POST请求中的数据
