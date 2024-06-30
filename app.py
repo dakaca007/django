@@ -12,12 +12,7 @@ from werkzeug.utils import secure_filename
 import sys
  
 app = Flask(__name__, static_folder='static', static_url_path='/static')
-cnx = mysql.connector.connect(
-    user='dakaca007',
-    password='Kgds63EecpSlAtYR',
-    host='mysql.sqlpub.com:3306',
-    database='dakaca'
-)       
+      
 @app.route("/")
 def index():
     return render_template("index.html")
