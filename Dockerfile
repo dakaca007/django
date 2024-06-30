@@ -1,5 +1,6 @@
 # 使用官方的CentOS 7镜像作为基础
-FROM centos:7
+FROM python:3.6-slim
+
 
 # 安装Python 3和pip
 RUN yum install -y epel-release && yum install -y python3 && yum install -y python3-pip
