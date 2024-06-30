@@ -49,9 +49,9 @@ host = 'mysql.sqlpub.com'
 port = 3306
 
 if test_mysql_connection(host, port):
-    print("true！")
+    print("true")
 else:
-    print("flase！")
+    print("flase")
 @app.route("/")
 def index():
     return render_template("index.html")
