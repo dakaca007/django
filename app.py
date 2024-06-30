@@ -16,7 +16,7 @@ import socket
 
 app = Flask(__name__, static_folder='static', static_url_path='/static')
 # MySQL数据库配置
-app.config['MYSQL_HOST'] = 'mysql.sqlpub.com:3306'
+app.config['MYSQL_HOST'] = 'mysql.sqlpub.com'
 app.config['MYSQL_USER'] = 'dakaca007'
 app.config['MYSQL_PASSWORD'] = 'Kgds63EecpSlAtYR'
 app.config['MYSQL_DB'] = 'dakaca'
