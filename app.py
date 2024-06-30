@@ -54,7 +54,7 @@ def user_list():
     user_list_html += "</ul>"
     
     # 以 HTML 格式返回用户列表
-    return user_list_html
+    return render_template("user_list.html", user_list_html=user_list_html)
 @app.route("/add_user", methods=["POST"])
 def add_user():
     # 获取POST请求中的数据
