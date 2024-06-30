@@ -1,12 +1,45 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Flask CRUD Example</title>
+<meta charset="UTF-8">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Responsive Web Page</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f0f0f0;
+  }
+
+  .container {
+    width: 80%;
+    margin: 0 auto;
+    background-color: #fff;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  }
+
+  @media screen and (max-width: 768px) {
+    .container {
+      width: 90%;
+    }
+  }
+
+  @media screen and (max-width: 480px) {
+    .container {
+      width: 95%;
+    }
+  }
+</style>
 </head>
 <body>
-    <h1>Flask CRUD Example</h1>
-    
+  <div class="container">
+    <h1>Welcome to My Website</h1>
+    <p>This is a responsive web page.</p>
+ 
     <!-- 添加用户表单 -->
     <h2>Add User</h2>
     <form id="addUserForm">
@@ -42,5 +75,7 @@
 
         
     </script>
+  
+  </div>
 </body>
 </html>
