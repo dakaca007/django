@@ -117,7 +117,7 @@ def delete_user(user_id):
 
 @app.route("/update_user/<int:user_id>", methods=["GET","POST"])
 def update_user(user_id):
-     if request.method == "POST":
+    if request.method == "POST":
         # 获取POST请求中的数据
         first_name = request.form.get("first_name")
         last_name = request.form.get("last_name")
@@ -146,7 +146,7 @@ def update_user(user_id):
 
         # 重定向到用户列表或其他页面
         return redirect("/user_list")
-    else:
+     else:
         # 返回带有用户ID的模板，用于显示更新用户信息的表单
         return render_template("update_user.html", user_id=user_id)
 @app.route("/get_user/<int:user_id>", methods=["GET"])
