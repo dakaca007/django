@@ -44,12 +44,11 @@ def user_list():
     # 关闭游标和数据库连接
     cursor.close()
     conn.close()
-    # 直接打印查询结果
-    for user in data:
-        print(user)
+     
+     
 
     # 或者以 JSON 数据的形式返回查询结果
-    return jsonify(users=data)
+    return render_template("user_list.html", users=data)
 @app.route("/add_user", methods=["POST"])
 def add_user():
     # 获取POST请求中的数据
