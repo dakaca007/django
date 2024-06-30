@@ -154,7 +154,8 @@ def get_user(user_id):
             'email': data[3]
         }
          
-        return json.dumps(result, ensure_ascii=False)  # 禁止使用 ASCII 编码
+        result2=json.dumps(result, ensure_ascii=False)  # 禁止使用 ASCII 编码
+        return render_template('user_info.html', users=result2)
     else:
         return "User not found"
 if __name__ == '__main__':
