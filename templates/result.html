@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Database Query Result</title>
+</head>
+<body>
+    <h1>Database Query Result</h1>
+    <table>
+        <tr>
+            <th>Column 1</th>
+            <th>Column 2</th>
+            <!-- 添加更多的表头，以匹配你的查询结果 -->
+        </tr>
+        {% for row in data %}
+        <tr>
+            <td>{{ row[0] }}</td>
+            <td>{{ row[1] }}</td>
+            <!-- 添加更多的列，以匹配你的查询结果 -->
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>
