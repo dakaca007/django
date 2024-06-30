@@ -142,7 +142,7 @@ def update_user(user_id):
         conn.close()
 
         # 重定向到用户列表或其他页面
-        return redirect(url_for("user_list"))
+        return redirect("/user_list")
     else:
         # 返回带有用户ID的模板，用于显示更新用户信息的表单
         return render_template("update_user.html", user_id=user_id)
