@@ -1,5 +1,5 @@
 # 使用官方的CentOS 7镜像作为基础
-FROM centos7
+FROM centos:7
 
 
 # 安装Python 3和pip
