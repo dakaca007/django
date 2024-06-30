@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>User Info</title>
+</head>
+<body>
+    <h1>User Information</h1>
+    
+    <!-- 使用 JavaScript 从 JSON 字符串中获取数据并显示 -->
+    <script>
+        // 将 Flask 传递过来的 JSON 字符串解析为 JavaScript 对象
+        var users = {{ users | tojson }};
+        
+        // 循环遍历每个用户，并显示在页面上
+        for (var i = 0; i < users.length; i++) {
+            document.write("<p><strong>ID:</strong> " + users[i].id + "</p>");
+            document.write("<p><strong>First Name:</strong> " + users[i].first_name + "</p>");
+            document.write("<p><strong>Last Name:</strong> " + users[i].last_name + "</p>");
+            document.write("<p><strong>Email:</strong> " + users[i].email + "</p>");
+            document.write("<hr>");
+        }
+    </script>
+</body>
+</html>
