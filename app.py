@@ -47,10 +47,12 @@ def user_list():
      
      
 
-     # 生成用户列表的 HTML
     user_list_html = "<ul>"
     for user in data:
-        user_list_html += f"<li>{user[1]} {user[2]} - {user[0]}</li>"
+        user_list_html += f"<li>{user[1]} {user[2]} - {user[0]}"
+        user_list_html += f"<a href='/delete_user/{user[0]}'>删除</a>"
+        user_list_html += f" <a href='/update_user/{user[0]}'>更新</a></li>"
+        user_list_html += f" <a href='/get_user/{user[0]}'>查询</a></li>"
     user_list_html += "</ul>"
     
     # 以 HTML 格式返回用户列表
