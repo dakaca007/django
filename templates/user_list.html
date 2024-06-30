@@ -9,8 +9,8 @@
     {% for user in users %}
         <li>
             {{ user.first_name }} {{ user.last_name }} -
-            <a href="{{ url_for('update_user', user_id=user.id) }}">编辑</a> |
-            <a href="{{ url_for('delete_user', user_id=user.id) }}">删除</a>
+            -{{ user.id }}
+            
         </li>
     {% endfor %}
 </ul>
