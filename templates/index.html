@@ -67,7 +67,7 @@
             event.preventDefault();
             
             var form = $(this);
-            var url = "{{ url_for('get_user') }}";
+            var url = "{{ url_for('get_user',user_id=1) }}";
             var formData = form.serialize();
 
             $.ajax({
