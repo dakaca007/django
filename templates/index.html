@@ -49,7 +49,7 @@
             event.preventDefault();
             
             var form = $(this);
-            var url = form.attr("action");
+            var url = "{{ url_for('add_user') }}";
             var formData = form.serialize();
 
             $.ajax({
@@ -67,7 +67,7 @@
             event.preventDefault();
             
             var form = $(this);
-            var url = form.attr("action");
+            var url = "{{ url_for('get_user') }}";
             var formData = form.serialize();
 
             $.ajax({
@@ -85,7 +85,7 @@
             event.preventDefault();
             
             var form = $(this);
-            var url = form.attr("action");
+            var url = "{{ url_for('update_user') }}";
             var formData = form.serialize();
 
             $.ajax({
@@ -103,7 +103,7 @@
             event.preventDefault();
             
             var form = $(this);
-            var url = form.attr("action");
+            var url = "{{ url_for('delete_user') }}";
             var formData = form.serialize();
 
             $.ajax({
