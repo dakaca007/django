@@ -47,8 +47,14 @@ def user_list():
      
      
 
-    # 或者以 JSON 数据的形式返回查询结果
-    return render_template("user_list.html", users=data)
+     # 生成用户列表的 HTML
+    user_list_html = "<ul>"
+    for user in data:
+        user_list_html += f"<li>{user[1]} {user[2]} - {user[0]}</li>"
+    user_list_html += "</ul>"
+    
+    # 以 HTML 格式返回用户列表
+    return user_list_html
 @app.route("/add_user", methods=["POST"])
 def add_user():
     # 获取POST请求中的数据
