@@ -1,12 +1,44 @@
+
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>更新用户</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Responsive Web Page</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f0f0f0;
+  }
+
+  .container {
+    width: 80%;
+    margin: 0 auto;
+    background-color: #fff;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  }
+
+  @media screen and (max-width: 768px) {
+    .container {
+      width: 90%;
+    }
+  }
+
+  @media screen and (max-width: 480px) {
+    .container {
+      width: 95%;
+    }
+  }
+</style>
 </head>
 <body>
-    <h1>更新用户</h1>
-    <form method="POST" action="/update_user/{{ user_id }}">
-        <label for="first_name">First Name:</label>
+  <div class="container">
+    <h1>Welcome to My Website</h1>
+    <p>This is a responsive web page.</p>
+      <label for="first_name">First Name:</label>
         
         <input type="text" id="first_name" name="first_name" value=""><br><br>
         <label for="last_name">Last Name:</label>
@@ -17,5 +49,6 @@
         <input type="email" id="email" name="email" value=""><br><br>
         <input type="submit" value="更新">
     </form>
+  </div>
 </body>
 </html>
