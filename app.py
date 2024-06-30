@@ -117,7 +117,7 @@ def delete_user(user_id):
 
 @app.route("/update_user/<int:user_id>", methods=["GET","POST"])
 def update_user(user_id):
-    if request.method == "POST":
+    if  request.method == "POST":
         # 获取POST请求中的数据
         first_name = request.form.get("first_name")
         last_name = request.form.get("last_name")
