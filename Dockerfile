@@ -1,5 +1,5 @@
 # 使用官方的CentOS 7镜像作为基础
-FROM python:3.6-slim
+FROM centos7
 
 
 # 安装Python 3和pip
@@ -20,7 +20,7 @@ COPY . /app
 
  
 RUN pip3 install -i https://pypi.tuna.tsinghua.edu.cn/simple flask
-RUN pip3 install -i https://pypi.tuna.tsinghua.edu.cn/simple mysql-connector-python
+
 RUN pip3 install -i https://pypi.tuna.tsinghua.edu.cn/simple requests
 RUN pip3 install -i https://pypi.tuna.tsinghua.edu.cn/simple Werkzeug
 
