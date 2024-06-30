@@ -18,20 +18,21 @@ app.config['MYSQL_USER'] = 'dakaca007'
 app.config['MYSQL_PASSWORD'] = 'Kgds63EecpSlAtYR'
 app.config['MYSQL_DB'] = 'dakaca'
 
-# 创建数据库连接
-conn = pymysql.connect(
-    host=app.config['MYSQL_HOST'],
-    user=app.config['MYSQL_USER'],
-    password=app.config['MYSQL_PASSWORD'],
-    db=app.config['MYSQL_DB']
-)   
-# 创建游标
-cursor = conn.cursor()
+
 @app.route("/")
 def index():
     return render_template("index.html")
 @app.route("/test")
 def test():
+    # 创建数据库连接
+    conn = pymysql.connect(
+        host=app.config['MYSQL_HOST'],
+        user=app.config['MYSQL_USER'],
+        password=app.config['MYSQL_PASSWORD'],
+        db=app.config['MYSQL_DB']
+    )   
+    # 创建游标
+    cursor = conn.cursor()
     # 执行SQL查询
     cursor.execute("SELECT * FROM user")
     data = cursor.fetchall()
