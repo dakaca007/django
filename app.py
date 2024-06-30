@@ -138,7 +138,7 @@ def update_user(user_id):
     cursor.close()
     conn.close()
 
-    return "User updated successfully"
+    return render_template("update_user.html", user_id=user_id)
 @app.route("/get_user/<int:user_id>", methods=["GET"])
 def get_user(user_id):
     # 创建数据库连接
