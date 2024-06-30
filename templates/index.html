@@ -1,14 +1,120 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Proxy Mirror</title>
-     
+    <title>Flask CRUD Example</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
-    <form action="/test" method="get">
-        <input type="text" name="url" placeholder="Enter URL">
-        <button type="submit">Submit</button>
+    <h1>Flask CRUD Example</h1>
+    
+    <!-- 添加用户表单 -->
+    <h2>Add User</h2>
+    <form id="addUserForm">
+        <input type="text" name="first_name" placeholder="First Name" required>
+        <input type="text" name="last_name" placeholder="Last Name" required>
+        <input type="email" name="email" placeholder="Email" required>
+        <button type="submit">Add User</button>
     </form>
- 
+
+    <!-- 查询用户表单 -->
+    <h2>Get User</h2>
+    <form id="getUserForm">
+        <input type="number" name="user_id" placeholder="User ID" required>
+        <button type="submit">Get User</button>
+    </form>
+
+    <!-- 更新用户表单 -->
+    <h2>Update User</h2>
+    <form id="updateUserForm">
+        <input type="number" name="user_id" placeholder="User ID" required>
+        <input type="text" name="first_name" placeholder="First Name" required>
+        <input type="text" name="last_name" placeholder="Last Name" required>
+        <input type="email" name="email" placeholder="Email" required>
+        <button type="submit">Update User</button>
+    </form>
+
+    <!-- 删除用户表单 -->
+    <h2>Delete User</h2>
+    <form id="deleteUserForm">
+        <input type="number" name="user_id" placeholder="User ID" required>
+        <button type="submit">Delete User</button>
+    </form>
+
+    <!-- 显示结果 -->
+    <div id="result"></div>
+
+    <script>
+        // 添加用户表单提交事件
+        $("#addUserForm").submit(function(event) {
+            event.preventDefault();
+            
+            var form = $(this);
+            var url = form.attr("action");
+            var formData = form.serialize();
+
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: formData,
+                success: function(response) {
+                    $("#result").text(response);
+                }
+            });
+        });
+
+        // 查询用户表单提交事件
+        $("#getUserForm").submit(function(event) {
+            event.preventDefault();
+            
+            var form = $(this);
+            var url = form.attr("action");
+            var formData = form.serialize();
+
+            $.ajax({
+                type: "GET",
+                url: url,
+                data: formData,
+                success: function(response) {
+                    $("#result").text(JSON.stringify(response));
+                }
+            });
+        });
+
+        // 更新用户表单提交事件
+        $("#updateUserForm").submit(function(event) {
+            event.preventDefault();
+            
+            var form = $(this);
+            var url = form.attr("action");
+            var formData = form.serialize();
+
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: formData,
+                success: function(response) {
+                    $("#result").text(response);
+                }
+            });
+        });
+
+        // 删除用户表单提交事件
+        $("#deleteUserForm").submit(function(event) {
+            event.preventDefault();
+            
+            var form = $(this);
+            var url = form.attr("action");
+            var formData = form.serialize();
+
+            $.ajax({
+                type: "GET",
+                url: url,
+                data: formData,
+                success: function(response) {
+                    $("#result").text(response);
+                }
+            });
+        });
+    </script>
 </body>
 </html>
