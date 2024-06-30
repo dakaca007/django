@@ -5,7 +5,7 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Responsive Web Page</title>
+<title>Company Homepage</title>
 <style>
   body {
     font-family: Arial, sans-serif;
@@ -33,49 +33,107 @@
       width: 95%;
     }
   }
+
+  header {
+    text-align: center;
+    padding: 20px 0;
+    background-color: #333;
+    color: #fff;
+  }
+
+  nav {
+    margin-top: 20px;
+    padding: 10px 0;
+    background-color: #999;
+    color: #fff;
+  }
+
+  nav ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+  }
+
+  nav ul li {
+    display: inline-block;
+    margin-right: 10px;
+  }
+
+  nav ul li a {
+    text-decoration: none;
+    color: #fff;
+    padding: 5px 10px;
+  }
+
+  section {
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #fff;
+  }
+
+  footer {
+    text-align: center;
+    padding: 10px;
+    background-color: #333;
+    color: #fff;
+  }
 </style>
 </head>
 <body>
+  <header>
+    <h1>Welcome to Our Company</h1>
+  </header>
+
+  <nav>
+    <ul>
+      <li><a href="#">Home</a></li>
+      <li><a href="#">About</a></li>
+      <li><a href="#">Services</a></li>
+      <li><a href="#">Contact</a></li>
+    </ul>
+  </nav>
+
   <div class="container">
-    <h1>Welcome to My Website</h1>
-    <p>This is a responsive web page.</p>
- 
-    <!-- 添加用户表单 -->
-    <h2>Add User</h2>
-    <form id="addUserForm">
-        <input type="text" name="first_name" placeholder="First Name" required>
-        <input type="text" name="last_name" placeholder="Last Name" required>
-        <input type="email" name="email" placeholder="Email" required>
-        <button type="submit">Add User</button>
-    </form>
+    <section>
+      <h2>Welcome to Our Website</h2>
+      <p>This is the homepage of our company. We provide high-quality products and excellent services to our customers.</p>
+    </section>
 
-     
-
-    
-  
-    <script>
-        // 添加用户表单提交事件
-        $("#addUserForm").submit(function(event) {
-            event.preventDefault();
-            
-            var form = $(this);
-            var url = "{{ url_for('add_user') }}";
-            var formData = form.serialize();
-
-            $.ajax({
-                type: "POST",
-                url: url,
-                data: formData,
-                success: function(response) {
-                    $("#result").text(response);
-                    window.location.href = "{{ url_for('user_list') }}";
-                }
-            });
-        });
-
-        
-    </script>
-  
+    <section>
+      <h2>Add User</h2>
+      <form id="addUserForm">
+          <input type="text" name="first_name" placeholder="First Name" required>
+          <input type="text" name="last_name" placeholder="Last Name" required>
+          <input type="email" name="email" placeholder="Email" required>
+          <button type="submit">Add User</button>
+      </form>
+    </section>
   </div>
+
+  <footer>
+    &copy; 2024 Our Company. All rights reserved.
+  </footer>
+
+  <script>
+    // 添加用户表单提交事件
+    $("#addUserForm").submit(function(event) {
+        event.preventDefault();
+        
+        var form = $(this);
+        var url = "{{ url_for('add_user') }}";
+        var formData = form.serialize();
+
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: formData,
+            success: function(response) {
+                $("#result").text(response);
+                window.location.href = "{{ url_for('user_list') }}";
+            }
+        });
+    });
+  </script>
 </body>
 </html>
