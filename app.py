@@ -1,6 +1,6 @@
 ﻿# -*- coding: utf-8 -*-
 from flask import Flask, request, jsonify, render_template, Response,redirect
-from flask_sqlalchemy import SQLAlchemy
+
 
 from wtforms import Form, StringField, SubmitField
 from wtforms.validators import DataRequired, Length
@@ -11,7 +11,7 @@ import os
 from werkzeug.utils import secure_filename
 import sys
 app = Flask(__name__, static_folder='static', static_url_path='/static')
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://dakaca007:Kgds63EecpSlAtYR@mysql.sqlpub.com:3306/dakaca' 
+
 def list_files(directory):
     file_list_html = '<ul>'
     for root, dirs, files in os.walk(directory):
