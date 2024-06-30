@@ -19,7 +19,7 @@ COPY . /app
 
  
 RUN pip3 install -i https://pypi.tuna.tsinghua.edu.cn/simple flask
-
+RUN pip3 install -i https://pypi.tuna.tsinghua.edu.cn/simple mysql-connector-python
 RUN pip3 install -i https://pypi.tuna.tsinghua.edu.cn/simple requests
 RUN pip3 install -i https://pypi.tuna.tsinghua.edu.cn/simple Werkzeug
 
