@@ -15,9 +15,15 @@ app.config['MYSQL_HOST'] = 'mysql.sqlpub.com'
 app.config['MYSQL_USER'] = 'dakaca007'
 app.config['MYSQL_PASSWORD'] = 'Kgds63EecpSlAtYR'
 app.config['MYSQL_DB'] = 'dakaca'
+
 @app.route("/")
 def index():
-    return render_template("index.html")
+    # 执行PHP脚本
+    process = subprocess.run(['php', 'index.php'], capture_output=True)
+
+    # 获取PHP脚本的输出
+    output = process.stdout.decode('utf-8')
+    return render_template("index.html",show_output=output)
 @app.route("/user_list")
 def user_list():
     # 创建数据库连接
