@@ -16,60 +16,7 @@ app.config['MYSQL_HOST'] = 'mysql.sqlpub.com'
 app.config['MYSQL_USER'] = 'dakaca007'
 app.config['MYSQL_PASSWORD'] = 'Kgds63EecpSlAtYR'
 app.config['MYSQL_DB'] = 'dakaca'
-# 执行 PHP 脚本并返回结果
-def execute_php_script(script_name, params=None):
-    command = ['php','-d','mbstring.internal_encoding=UTF-8', script_name]
-    if params:
-        for key, value in params.items():
-            command.append(f'--{key}={value}')
-    try:
-        result = subprocess.check_output(command, stderr=subprocess.STDOUT)
-         
-        return json.loads(result.decode('utf-8'))
-    except subprocess.CalledProcessError as e:
-        return f"Error: {e.output.decode('utf-8')}"
-@app.route('/users', methods=['GET'])
-def get_users():
-    result = execute_php_script('get_users.php')
-    if isinstance(result, str) and result.startswith("Error:"):
-        return result
-
-    # 选择一个用户的ID（假设选择第一个用户）
-    user_id = result[0]['id'] if result else None
-    return render_template('users.html', result=result, user_id=user_id)
-
-@app.route('/users/add', methods=['GET', 'POST'])
-def add_user():
-    if request.method == 'POST':
-        params = {
-            'first_name': request.form['first_name'],
-            'last_name': request.form['last_name'],
-            'email': request.form['email']
-        }
-        result = execute_php_script('add_user.php', params)
-        return redirect(url_for('get_users'))
-    return render_template('add_user.html')
-
-@app.route('/users/update/<int:id>', methods=['GET', 'POST'])
-def update_user(id):
-    if request.method == 'POST':
-        params = {
-            'id': id,
-            'first_name': request.form['first_name'],
-            'last_name': request.form['last_name'],
-            'email': request.form['email']
-        }
-        result = execute_php_script('update_user.php', params)
-        return redirect(url_for('get_users'))
-    params = {'id': id}
-    user_data = execute_php_script('get_user.php', params)
-    return render_template('update_user.html', user=user_data)
-
-@app.route('/users/delete/<int:id>', methods=['POST'])
-def delete_user(id):
-    params = {'id': id}
-    result = execute_php_script('delete_user.php', params)
-    return redirect(url_for('get_users'))
+ 
 
 @app.route('/c', methods=['GET', 'POST'])
 def indexc():
@@ -216,7 +163,7 @@ def user_list():
     
     # 以 HTML 格式返回用户列表
     return render_template("user_list.html", user_list_html=user_list_html)
-'''
+ 
 @app.route("/add_user", methods=["POST"])
 def add_user():
     # 获取POST请求中的数据
@@ -326,6 +273,6 @@ def get_user(user_id):
         return render_template('user_info.html', users=result2)
     else:
         return "User not found"
-'''
+ 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=80)
