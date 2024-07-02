@@ -17,8 +17,8 @@ app.config['MYSQL_PASSWORD'] = 'Kgds63EecpSlAtYR'
 app.config['MYSQL_DB'] = 'dakaca'
 @app.route("/ls")
 def linxuls():
-    output = subprocess.check_output(["ls", "-l"])
-    return render_template('linuxls.html', html_content=output.decode("utf-8"))
+    return render_template('linuxls.html')  # 仅返回表单页面
+
 @app.route("/execute_command", methods=["POST"])
 def execute_command():
     command = request.form.get("command")  # 获取用户输入的命令
