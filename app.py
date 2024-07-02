@@ -21,14 +21,15 @@ def indexc():
         c_code = request.form.get('c_code')
 
         # Create temporary file to store C code
-        temp_file_path = 'temp.c'  # You can adjust this path if needed
+        temp_file_path = 'temp.c'
 
         try:
-            with open(temp_file_path, 'w') as f:
+            # Write C code to file with UTF-8 encoding
+            with open(temp_file_path, 'w', encoding='utf-8') as f:
                 f.write(c_code)
 
-            # Compile C code
-            subprocess.check_output(['gcc', temp_file_path, '-o', 'temp'], stderr=subprocess.STDOUT)
+            # Compile C code with UTF-8 charset option
+            subprocess.check_output(['gcc', temp_file_path, '-o', 'temp', '-fexec-charset=UTF-8'], stderr=subprocess.STDOUT)
 
             # Execute compiled program
             result = subprocess.check_output(['./temp'], stderr=subprocess.STDOUT)
