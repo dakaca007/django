@@ -28,6 +28,44 @@ def execute_php_script(script_name, params=None):
         return result.decode('utf-8')
     except subprocess.CalledProcessError as e:
         return f"Error: {e.output.decode('utf-8')}"
+@app.route('/users', methods=['GET'])
+def get_users():
+    result = execute_php_script('get_users.php')
+    return render_template('users.html', result=result)
+
+@app.route('/users/add', methods=['GET', 'POST'])
+def add_user():
+    if request.method == 'POST':
+        params = {
+            'first_name': request.form['first_name'],
+            'last_name': request.form['last_name'],
+            'email': request.form['email']
+        }
+        result = execute_php_script('add_user.php', params)
+        return redirect(url_for('get_users'))
+    return render_template('add_user.html')
+
+@app.route('/users/update/<int:id>', methods=['GET', 'POST'])
+def update_user(id):
+    if request.method == 'POST':
+        params = {
+            'id': id,
+            'first_name': request.form['first_name'],
+            'last_name': request.form['last_name'],
+            'email': request.form['email']
+        }
+        result = execute_php_script('update_user.php', params)
+        return redirect(url_for('get_users'))
+    params = {'id': id}
+    user_data = execute_php_script('get_user.php', params)
+    return render_template('update_user.html', user=user_data)
+
+@app.route('/users/delete/<int:id>', methods=['POST'])
+def delete_user(id):
+    params = {'id': id}
+    result = execute_php_script('delete_user.php', params)
+    return redirect(url_for('get_users'))
+
 @app.route('/c', methods=['GET', 'POST'])
 def indexc():
     if request.method == 'POST':
