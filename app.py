@@ -239,7 +239,7 @@ def add_user():
     return "User added successfully"
 '''
 @app.route("/delete_user/<int:user_id>", methods=["GET"])
-
+'''
 def delete_user(user_id):
     # 创建数据库连接
     conn = pymysql.connect(
@@ -321,5 +321,6 @@ def get_user(user_id):
         return render_template('user_info.html', users=result2)
     else:
         return "User not found"
+'''
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=80)
