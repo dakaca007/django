@@ -19,6 +19,17 @@ app.config['MYSQL_DB'] = 'dakaca'
 def linxuls():
     output = subprocess.check_output(["ls", "-l"])
     return render_template('linuxls.html', html_content=output.decode("utf-8"))
+@app.route("/execute_command", methods=["POST"])
+def execute_command():
+    command = request.form.get("command")  # 获取用户输入的命令
+    if not command:
+        return "请输入要执行的命令"
+
+    try:
+        output = subprocess.check_output(command.split())  # 执行命令
+        return render_template('linuxls.html', html_content=output.decode("utf-8"))
+    except subprocess.CalledProcessError as e:
+        return f"命令执行失败: {e.output.decode('utf-8')}"  # 处理错误
 @app.route("/")
 def index():
     # 执行 PHP 脚本
