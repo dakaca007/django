@@ -18,12 +18,12 @@ app.config['MYSQL_DB'] = 'dakaca'
 
 @app.route("/")
 def index():
-    # 执行PHP脚本
+    # 执行 PHP 脚本
     process = subprocess.run(['php', 'index.php'], capture_output=True)
-
-    # 获取PHP脚本的输出
-    output = process.stdout.decode('utf-8')
-    return render_template("index.html",show_output=output)
+    # 获取 PHP 脚本输出的 HTML 内容
+    html_content = process.stdout.decode('utf-8')
+    # 在 Flask 模板中渲染 HTML 内容
+    return render_template('index.html', html_content=html_content)
 @app.route("/user_list")
 def user_list():
     # 创建数据库连接
