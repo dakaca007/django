@@ -211,6 +211,7 @@ def user_list():
     
     # 以 HTML 格式返回用户列表
     return render_template("user_list.html", user_list_html=user_list_html)
+'''
 @app.route("/add_user", methods=["POST"])
 def add_user():
     # 获取POST请求中的数据
@@ -236,7 +237,9 @@ def add_user():
     cursor.close()
     conn.close()
     return "User added successfully"
+'''
 @app.route("/delete_user/<int:user_id>", methods=["GET"])
+
 def delete_user(user_id):
     # 创建数据库连接
     conn = pymysql.connect(
