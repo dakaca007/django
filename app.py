@@ -15,6 +15,32 @@ app.config['MYSQL_HOST'] = 'mysql.sqlpub.com'
 app.config['MYSQL_USER'] = 'dakaca007'
 app.config['MYSQL_PASSWORD'] = 'Kgds63EecpSlAtYR'
 app.config['MYSQL_DB'] = 'dakaca'
+@app.route('/c', methods=['GET', 'POST'])
+def indexc():
+    if request.method == 'POST':
+        c_code = request.form.get('c_code')
+
+        # 创建临时文件存储 C 代码
+        with open('temp.c', 'w') as f:
+            f.write(c_code)
+
+        # 编译 C 代码
+        try:
+            subprocess.check_output(['gcc', 'temp.c', '-o', 'temp'], stderr=subprocess.STDOUT, shell=True)
+        except subprocess.CalledProcessError as e:
+            result = f"Error: {e.output.decode('utf-8')}"
+            return render_template('indexc.html', c_code=c_code, result=result)
+
+        # 执行编译后的程序
+        try:
+            result = subprocess.check_output(['./temp'], stderr=subprocess.STDOUT, shell=True)
+            result = result.decode('utf-8')
+        except subprocess.CalledProcessError as e:
+            result = f"Error: {e.output.decode('utf-8')}"
+
+        return render_template('indexc.html', c_code=c_code, result=result)
+    else:
+        return render_template('indexc.html')
 @app.route('/php', methods=['GET', 'POST'])
 def indexphp():
     if request.method == 'POST':
