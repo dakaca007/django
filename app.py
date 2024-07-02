@@ -18,7 +18,7 @@ app.config['MYSQL_DB'] = 'dakaca'
 @app.route("/ls")
 def linxuls():
     output = subprocess.check_output(["ls", "-l"])
-    return render_template('linuxls.html', html_content=html_content)
+    return render_template('linuxls.html', html_content=output.decode("utf-8"))
 @app.route("/")
 def index():
     # 执行 PHP 脚本
