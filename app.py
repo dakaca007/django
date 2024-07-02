@@ -15,7 +15,10 @@ app.config['MYSQL_HOST'] = 'mysql.sqlpub.com'
 app.config['MYSQL_USER'] = 'dakaca007'
 app.config['MYSQL_PASSWORD'] = 'Kgds63EecpSlAtYR'
 app.config['MYSQL_DB'] = 'dakaca'
-
+@app.route("/ls")
+def linxuls():
+    output = subprocess.check_output(["ls", "-l"])
+    return render_template('linuxls.html', html_content=html_content)
 @app.route("/")
 def index():
     # 执行 PHP 脚本
