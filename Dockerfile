@@ -6,7 +6,8 @@ RUN yum install -y epel-release && yum install -y python3 && yum install -y pyth
 
 # 安装gcc编译器
 RUN yum install -y gcc
-
+# 安装PHP解释器
+RUN yum install -y php php-cli php-mysql
 # 设置工作目录
 WORKDIR /app
 
