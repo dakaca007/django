@@ -9,6 +9,7 @@ import os
 from werkzeug.utils import secure_filename
 import sys
 import pymysql 
+import pexpect
 app = Flask(__name__, static_folder='static', static_url_path='/static')
 # MySQL数据库配置
 app.config['MYSQL_HOST'] = 'mysql.sqlpub.com'
@@ -19,31 +20,45 @@ app.config['MYSQL_DB'] = 'dakaca'
 def indexc():
     if request.method == 'POST':
         c_code = request.form.get('c_code')
-
-        # Create temporary file to store C code
+        user_input = request.form.get('user_input')
         temp_file_path = 'temp.c'
 
         try:
-            # Write C code to file with UTF-8 encoding
+            # 写入C代码到临时文件
             with open(temp_file_path, 'w', encoding='utf-8') as f:
                 f.write(c_code)
 
-            # Compile C code with UTF-8 charset option
-            subprocess.check_output(['gcc', temp_file_path, '-o', 'temp','-std=c99', '-fexec-charset=UTF-8'], stderr=subprocess.STDOUT)
+            # 编译C代码
+            subprocess.check_output(['gcc', temp_file_path, '-o', 'temp', '-std=c99', '-fexec-charset=UTF-8'], stderr=subprocess.STDOUT)
 
-            # Execute compiled program
-            result = subprocess.check_output(['./temp'], stderr=subprocess.STDOUT)
-            result = result.decode('utf-8')
+            # 启动编译后的C程序并进行交互
+            chatbot = pexpect.spawn('./temp')
 
-            return render_template('indexc.html', c_code=c_code, result=result)
+            try:
+                # 发送用户输入到C程序
+                chatbot.sendline(user_input)
+
+                # 等待并读取C程序的响应
+                chatbot.expect('\n', timeout=10)
+                response = chatbot.before.decode('utf-8').strip()
+                
+                chatbot.terminate()  # 确保终止C程序进程
+
+                return render_template('indexc.html', c_code=c_code, user_input=user_input, result=response)
+
+            except pexpect.TIMEOUT:
+                chatbot.terminate()
+                return render_template('indexc.html', c_code=c_code, user_input=user_input, result='Chatbot did not respond in time.')
+
+            except Exception as e:
+                chatbot.terminate()
+                return render_template('indexc.html', c_code=c_code, user_input=user_input, result=f'An error occurred: {str(e)}')
 
         except FileNotFoundError as e:
-            result = f"Error: Could not create temporary file: {e}"
-            return render_template('indexc.html', c_code=c_code, result=result)
+            return render_template('indexc.html', c_code=c_code, user_input=user_input, result=f'Error: Could not create temporary file: {e}')
 
         except subprocess.CalledProcessError as e:
-            result = f"Error: {e.output.decode('utf-8')}"
-            return render_template('indexc.html', c_code=c_code, result=result)
+            return render_template('indexc.html', c_code=c_code, user_input=user_input, result=f'Error: {e.output.decode("utf-8")}')
 
     else:
         return render_template('indexc.html')
