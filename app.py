@@ -16,6 +16,18 @@ app.config['MYSQL_HOST'] = 'mysql.sqlpub.com'
 app.config['MYSQL_USER'] = 'dakaca007'
 app.config['MYSQL_PASSWORD'] = 'Kgds63EecpSlAtYR'
 app.config['MYSQL_DB'] = 'dakaca'
+# 执行 PHP 脚本并返回结果
+def execute_php_script(script_name, params=None):
+    command = ['php','-d','mbstring.internal_encoding=UTF-8', script_name]
+    if params:
+        for key, value in params.items():
+            command.append(f'--{key}={value}')
+    try:
+        result = subprocess.check_output(command, stderr=subprocess.STDOUT)
+         
+        return result.decode('utf-8')
+    except subprocess.CalledProcessError as e:
+        return f"Error: {e.output.decode('utf-8')}"
 @app.route('/c', methods=['GET', 'POST'])
 def indexc():
     if request.method == 'POST':
