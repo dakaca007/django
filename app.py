@@ -25,13 +25,18 @@ def execute_php_script(script_name, params=None):
     try:
         result = subprocess.check_output(command, stderr=subprocess.STDOUT)
          
-        return json.loads(result.decode('utf-8'))
+        return result.decode('utf-8')
     except subprocess.CalledProcessError as e:
         return f"Error: {e.output.decode('utf-8')}"
 @app.route('/users', methods=['GET'])
 def get_users():
     result = execute_php_script('get_users.php')
-    return render_template('users.html', result=result)
+    if isinstance(result, str) and result.startswith("Error:"):
+        return result
+
+    # 选择一个用户的ID（假设选择第一个用户）
+    user_id = result[0]['id'] if result else None
+    return render_template('users.html', result=result, user_id=user_id)
 
 @app.route('/users/add', methods=['GET', 'POST'])
 def add_user():
