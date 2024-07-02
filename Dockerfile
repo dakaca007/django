@@ -26,7 +26,7 @@ RUN pip3 install -i https://pypi.tuna.tsinghua.edu.cn/simple Werkzeug
 
 RUN pip3 install -i https://pypi.tuna.tsinghua.edu.cn/simple wtforms
 RUN pip3 install -i https://pypi.tuna.tsinghua.edu.cn/simple pexpect
-
+RUN pip3 install -i https://pypi.tuna.tsinghua.edu.cn/simple -r requirements.txt
 
 # 暴露端口
 EXPOSE 80
