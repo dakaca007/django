@@ -237,9 +237,9 @@ def add_user():
     cursor.close()
     conn.close()
     return "User added successfully"
-'''
+
 @app.route("/delete_user/<int:user_id>", methods=["GET"])
-'''
+
 def delete_user(user_id):
     # 创建数据库连接
     conn = pymysql.connect(
