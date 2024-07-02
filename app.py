@@ -19,7 +19,7 @@ app.config['MYSQL_DB'] = 'dakaca'
 @app.route("/")
 def index():
     # 执行 PHP 脚本
-    process = subprocess.check_output(['php', 'your_php_script.php'])
+    process = subprocess.check_output(['php', 'index.php'])
     # 获取 PHP 脚本输出的 HTML 内容
     html_content = process.stdout.decode('utf-8')
     # 在 Flask 模板中渲染 HTML 内容
