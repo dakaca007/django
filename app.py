@@ -25,7 +25,7 @@ def execute_php_script(script_name, params=None):
     try:
         result = subprocess.check_output(command, stderr=subprocess.STDOUT)
          
-        return result.decode('utf-8')
+        return json.loads(result.decode('utf-8'))
     except subprocess.CalledProcessError as e:
         return f"Error: {e.output.decode('utf-8')}"
 @app.route('/users', methods=['GET'])
