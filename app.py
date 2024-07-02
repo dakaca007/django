@@ -15,6 +15,26 @@ app.config['MYSQL_HOST'] = 'mysql.sqlpub.com'
 app.config['MYSQL_USER'] = 'dakaca007'
 app.config['MYSQL_PASSWORD'] = 'Kgds63EecpSlAtYR'
 app.config['MYSQL_DB'] = 'dakaca'
+@app.route('/php', methods=['GET', 'POST'])
+def indexphp():
+    if request.method == 'POST':
+        php_code = request.form.get('php_code')
+
+        # 创建临时文件存储 PHP 代码
+        with open('temp.php', 'w') as f:
+            f.write(php_code)
+
+        # 执行 PHP 代码
+        try:
+            result = subprocess.check_output(['php', 'temp.php'], stderr=subprocess.STDOUT)
+            result = result.decode('utf-8')  # 解码输出结果
+        except subprocess.CalledProcessError as e:
+            result = f"Error: {e.output.decode('utf-8')}"
+
+        return render_template('indexphp.html', php_code=php_code, result=result)
+    else:
+        return render_template('indexphp.html')
+
 @app.route("/ls")
 def linxuls():
     return render_template('linuxls.html')  # 仅返回表单页面
