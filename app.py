@@ -29,7 +29,7 @@ def indexc():
                 f.write(c_code)
 
             # Compile C code with UTF-8 charset option
-            subprocess.check_output(['gcc', temp_file_path, '-o', 'temp', '-fexec-charset=UTF-8'], stderr=subprocess.STDOUT)
+            subprocess.check_output(['gcc', temp_file_path, '-o', 'temp','-std=c99', '-fexec-charset=UTF-8'], stderr=subprocess.STDOUT)
 
             # Execute compiled program
             result = subprocess.check_output(['./temp'], stderr=subprocess.STDOUT)
