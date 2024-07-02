@@ -53,12 +53,13 @@ def indexphp():
         php_code = request.form.get('php_code')
 
         # 创建临时文件存储 PHP 代码
-        with open('temp.php', 'w') as f:
+        with open('temp.php', 'w', encoding='utf-8') as f:
             f.write(php_code)
 
         # 执行 PHP 代码
         try:
-            result = subprocess.check_output(['php', 'temp.php'], stderr=subprocess.STDOUT)
+            # 在这里添加设置 PHP 内部编码的代码
+            result = subprocess.check_output(['php', '-d', 'mbstring.internal_encoding=UTF-8', 'temp.php'], stderr=subprocess.STDOUT)
             result = result.decode('utf-8')  # 解码输出结果
         except subprocess.CalledProcessError as e:
             result = f"Error: {e.output.decode('utf-8')}"
