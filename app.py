@@ -20,25 +20,30 @@ def indexc():
     if request.method == 'POST':
         c_code = request.form.get('c_code')
 
-        # 创建临时文件存储 C 代码
-        with open('temp.c', 'w') as f:
-            f.write(c_code)
+        # Create temporary file to store C code
+        temp_file_path = 'temp.c'  # You can adjust this path if needed
 
-        # 编译 C 代码
         try:
-            subprocess.check_output(['gcc', 'temp.c', '-o', 'temp'], stderr=subprocess.STDOUT, shell=True)
+            with open(temp_file_path, 'w') as f:
+                f.write(c_code)
+
+            # Compile C code
+            subprocess.check_output(['gcc', temp_file_path, '-o', 'temp'], stderr=subprocess.STDOUT)
+
+            # Execute compiled program
+            result = subprocess.check_output(['./temp'], stderr=subprocess.STDOUT)
+            result = result.decode('utf-8')
+
+            return render_template('indexc.html', c_code=c_code, result=result)
+
+        except FileNotFoundError as e:
+            result = f"Error: Could not create temporary file: {e}"
+            return render_template('indexc.html', c_code=c_code, result=result)
+
         except subprocess.CalledProcessError as e:
             result = f"Error: {e.output.decode('utf-8')}"
             return render_template('indexc.html', c_code=c_code, result=result)
 
-        # 执行编译后的程序
-        try:
-            result = subprocess.check_output(['./temp'], stderr=subprocess.STDOUT, shell=True)
-            result = result.decode('utf-8')
-        except subprocess.CalledProcessError as e:
-            result = f"Error: {e.output.decode('utf-8')}"
-
-        return render_template('indexc.html', c_code=c_code, result=result)
     else:
         return render_template('indexc.html')
 @app.route('/php', methods=['GET', 'POST'])
