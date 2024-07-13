@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from strong import create_app #, socketio
 from flask import Flask, request, jsonify, render_template, Response,redirect
 from wtforms import Form, StringField, SubmitField
 from wtforms.validators import DataRequired, Length
@@ -17,7 +16,6 @@ app.config['MYSQL_HOST'] = 'mysql.sqlpub.com'
 app.config['MYSQL_USER'] = 'dakaca007'
 app.config['MYSQL_PASSWORD'] = 'Kgds63EecpSlAtYR'
 app.config['MYSQL_DB'] = 'dakaca'
-app = create_app()
 @app.route('/php', methods=['GET', 'POST'])
 def indexphp():
     if request.method == 'POST':
