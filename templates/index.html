@@ -103,12 +103,7 @@
     <section>
         {{html_content | safe}}
       <h2>Add User</h2>
-      <form id="addUserForm">
-          <input type="text" name="first_name" placeholder="First Name" required>
-          <input type="text" name="last_name" placeholder="Last Name" required>
-          <input type="email" name="email" placeholder="Email" required>
-          <button type="submit">Add User</button>
-      </form>
+    
     </section>
   </div>
 
@@ -116,25 +111,6 @@
     &copy; 2024 Our Company. All rights reserved.
   </footer>
 
-  <script>
-    // 添加用户表单提交事件
-    $("#addUserForm").submit(function(event) {
-        event.preventDefault();
-        
-        var form = $(this);
-        var url = "{{ url_for('add_user') }}";
-        var formData = form.serialize();
-
-        $.ajax({
-            type: "POST",
-            url: url,
-            data: formData,
-            success: function(response) {
-                $("#result").text(response);
-                window.location.href = "{{ url_for('user_list') }}";
-            }
-        });
-    });
-  </script>
+  
 </body>
 </html>
