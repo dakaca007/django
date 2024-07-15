@@ -76,6 +76,11 @@
         
         <div id="news" class="news">
             <h2>新闻栏</h2>
+            <form action="post_news.php" method="post">
+        标题: <input type="text" name="title" required><br>
+        内容: <textarea name="content" required></textarea><br>
+        <button type="submit">提交</button>
+    </form>
             <div>
                 <?php
                 // 连接数据库
