@@ -14,3 +14,17 @@ try {
         $message = $_POST['message'];
 
         $sql = "INSERT INTO messages (name, message) VALUES (:name, :message)";
+        $stmt = $pdo->prepare($sql);
+        $stmt->bindParam(':name', $name, PDO::PARAM_STR);
+        $stmt->bindParam(':message', $message, PDO::PARAM_STR);
+        
+        if ($stmt->execute()) {
+            echo "留言插入成功！";
+        } else {
+            echo "插入留言时出错，请重试。";
+        }
+    }
+} catch (PDOException $e) {
+    die("数据库操作失败: " . $e->getMessage());
+}
+?>
