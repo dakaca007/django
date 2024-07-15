@@ -20,6 +20,8 @@ WORKDIR /var/www/html/
 # 启用 Apache mod_rewrite
 RUN a2enmod rewrite
 COPY . /var/www/html/
+# 复制 Apache 配置文件
+COPY 000-default.conf /etc/apache2/sites-available/000-default.conf
 # 暴露 80 端口
 EXPOSE 80
 # 启动脚本
