@@ -9,13 +9,13 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # 安装 Flask
-RUN pip3 install -i https://pypi.tuna.tsinghua.edu.cn/simple Flask
-RUN pip3 install -i https://pypi.tuna.tsinghua.edu.cn/simple pymysql
-RUN pip3 install -i https://pypi.tuna.tsinghua.edu.cn/simple requests
-RUN pip3 install -i https://pypi.tuna.tsinghua.edu.cn/simple Werkzeug
+RUN pip3 install Flask
+RUN pip3 install pymysql
+RUN pip3 install requests
+RUN pip3 install Werkzeug
 
-RUN pip3 install -i https://pypi.tuna.tsinghua.edu.cn/simple wtforms
-RUN pip3 install -i https://pypi.tuna.tsinghua.edu.cn/simple pexpect
+RUN pip3 install wtforms
+RUN pip3 install pexpect
 WORKDIR /var/www/html/
 # 启用 Apache mod_rewrite
 RUN a2enmod rewrite
