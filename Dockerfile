@@ -27,6 +27,9 @@ EXPOSE 80
 # 启动脚本
 #CMD ["bash", "start.sh"]
 # 启动 Apache 服务器
-CMD ["apache2-foreground"]
+#CMD ["apache2-foreground"]
+# 启动 Flask 应用和 Apache 服务器
+CMD service apache2 start && python3 /var/www/html/app.py
+
 
 
