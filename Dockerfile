@@ -19,9 +19,6 @@ RUN pip3 install -i https://pypi.tuna.tsinghua.edu.cn/simple pexpect
 WORKDIR /var/www/html/
 # 启用 Apache mod_rewrite
 RUN a2enmod rewrite
-
-# 复制 PHP 文件到默认的 Apache 目录
-COPY src/ /var/www/html/
 COPY . /var/www/html/
 # 暴露 80 端口
 EXPOSE 80
