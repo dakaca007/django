@@ -1,36 +1,33 @@
-# 使用官方的CentOS 7镜像作为基础
-FROM centos:7
+# 使用官方的 PHP Apache 镜像作为基础镜像
+FROM php:apache
 
-# 安装Python 3和pip
-RUN yum install -y epel-release && yum install -y python3 && yum install -y python3-pip
+# 更新包列表并安装 Python 和必要的依赖项
+RUN apt-get update && apt-get install -y \
+    python3 \
+    python3-pip \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
-# 安装gcc编译器
-RUN yum install -y gcc
-# 安装PHP解释器
-RUN yum install -y php php-cli php-mysql
-# 设置工作目录
-WORKDIR /app
-
-# 将当前目录中的所有文件复制到工作目录
-COPY . /app
-
- 
-
- 
-
- 
-RUN pip3 install -i https://pypi.tuna.tsinghua.edu.cn/simple flask
+# 安装 Flask
+RUN pip3 install -i https://pypi.tuna.tsinghua.edu.cn/simple Flask
 RUN pip3 install -i https://pypi.tuna.tsinghua.edu.cn/simple pymysql
 RUN pip3 install -i https://pypi.tuna.tsinghua.edu.cn/simple requests
 RUN pip3 install -i https://pypi.tuna.tsinghua.edu.cn/simple Werkzeug
 
 RUN pip3 install -i https://pypi.tuna.tsinghua.edu.cn/simple wtforms
 RUN pip3 install -i https://pypi.tuna.tsinghua.edu.cn/simple pexpect
- 
+WORKDIR /var/www/html/
+# 启用 Apache mod_rewrite
+RUN a2enmod rewrite
 
-# 暴露端口
+# 复制 PHP 文件到默认的 Apache 目录
+COPY src/ /var/www/html/
+COPY . /var/www/html/
+# 暴露 80 端口
 EXPOSE 80
-
-
 # 启动脚本
-CMD ["bash", "start.sh"]
+#CMD ["bash", "start.sh"]
+# 启动 Apache 服务器
+CMD ["apache2-foreground"]
+
+
