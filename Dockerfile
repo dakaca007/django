@@ -3,7 +3,9 @@ FROM php:apache
 WORKDIR /var/www/html/
 # 启用 Apache mod_rewrite
 # 安装 PHP PDO_MYSQL 扩展
-RUN docker-php-ext-install pdo_mysql
+RUN docker-php-ext-install pdo_mysql \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 RUN a2enmod rewrite
 COPY . /var/www/html/
 
