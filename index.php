@@ -72,6 +72,37 @@
                 内容: <textarea name="content" required></textarea><br>
                 <button type="submit">发布</button>
             </form>
+            <div>
+                <?php
+        // Connect to the database
+        $dsn = 'mysql:host=mysql.sqlpub.com;dbname=dakaca';
+        $user = 'dakaca007';
+        $password = 'Kgds63EecpSlAtYR';
+
+        try {
+            $pdo = new PDO($dsn, $user, $password, [
+                PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8mb4"
+            ]);
+            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+            // Query for forum posts
+            $sql = "SELECT * FROM forum ORDER BY id DESC"; // Assuming 'id' is the primary key in your forum table
+            $stmt = $pdo->query($sql);
+            $forumPosts = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            if (count($forumPosts) > 0) {
+                foreach ($forumPosts as $post) {
+                    echo "<h3>" . $post["title"] . "</h3>";
+                    echo "<p>" . $post["content"] . "</p>";
+                }
+            } else {
+                echo "论坛中没有数据";
+            }
+        } catch (PDOException $e) {
+            echo "连接失败: " . $e->getMessage();
+        }
+        ?>
+            </div>
         </div>
         
         <div id="news" class="news">
