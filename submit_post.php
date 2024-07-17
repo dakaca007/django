@@ -5,7 +5,7 @@ $userId = $_SESSION['UserID'];
 // 获取用户提交的标题和内容
 $title = $_POST['title'];
 $content = $_POST['content'];
-$fenlei=$_POST['fenlei']
+$fenlei=$_POST['fenlei'];
 
 
 // 插入到数据库中
