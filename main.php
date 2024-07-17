@@ -34,7 +34,7 @@
             <h2>论坛分类</h2>
             <ul>
                 <?php
-                include 'database.php';
+                require_once 'database.php';
                 $pdo = openDatabaseConnection();
                 
                 $sql = "SELECT CategoryName FROM Categories";
@@ -50,7 +50,7 @@
         <section class="posts">
             <h2>最新帖子</h2>
             <?php
-            include 'database.php';
+            require_once 'database.php';
             $pdo = openDatabaseConnection();
             
             $sql = "SELECT Title, Content, Username, PostDate FROM Posts JOIN Users ON Posts.AuthorID = Users.UserID ORDER BY PostDate DESC LIMIT 5";
