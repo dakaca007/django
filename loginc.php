@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once 'database.php';
+require_once 'includes/database.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $pdo = openDatabaseConnection();
@@ -12,7 +12,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $stmt->execute([$username]);
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    if ($user && password_verify($password, $user['Password'])) {
+    if ($user && password_verify($password, $user['PasswordHash'])) {
         $_SESSION['UserID'] = $user['UserID'];
         $_SESSION['Username'] = $user['Username'];
         header("Location: index.php");
@@ -23,7 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 }
 ?>
 
-<?php require_once 'header.php'; ?>
+<?php require_once 'templates/header.php'; ?>
 
 <h2>登录</h2>
 <?php if (isset($error)) echo "<p>$error</p>"; ?>
@@ -33,4 +33,4 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <button type="submit">登录</button>
 </form>
 
-<?php require_once 'footer.php'; ?>
+<?php require_once 'templates/footer.php'; ?>
