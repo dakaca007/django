@@ -15,6 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if ($user && password_verify($password, $user['PasswordHash'])) {
         $_SESSION['UserID'] = $user['UserID'];
         $_SESSION['Username'] = $user['Username'];
+        $pdo = null; 
         header("Location: index.php");
         exit();
     } else {
