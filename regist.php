@@ -11,7 +11,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $stmt = $pdo->prepare($sql);
     $stmt->execute([$username, $password, $email]);
     $pdo = null; 
-    header("Location: login.php");
+    header("Location: loginc.php");
     exit();
 }
 ?>
