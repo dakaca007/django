@@ -17,9 +17,15 @@ $comments = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <?php require_once 'templates/header.php'; ?>
+ <form method="post" action="submit_post.php">
+    标题： <input type="text" name="title" required><br>
+    内容： <textarea name="content" required></textarea><br>
+    <button type="submit">发布</button>
+</form>
 <?php
 if (empty($post)) {
     // 如果 $post 为空，可以输出提示信息或者重定向到其他页面
+   
     echo "未找到相关文章";
     exit();
 }
