@@ -33,13 +33,37 @@
         <section class="categories">
             <h2>论坛分类</h2>
             <ul>
-                <?php include 'forum_backend.php'; getCategories(); ?>
+                <?php
+                include 'database.php';
+                $pdo = openDatabaseConnection();
+                
+                $sql = "SELECT CategoryName FROM Categories";
+                $stmt = $pdo->query($sql);
+                
+                while($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                    echo "<li><a href='#'>" . $row['CategoryName'] . "</a></li>";
+                }
+                ?>
             </ul>
         </section>
 
         <section class="posts">
             <h2>最新帖子</h2>
-            <?php include 'forum_backend.php'; getLatestPosts(); ?>
+            <?php
+            include 'database.php';
+            $pdo = openDatabaseConnection();
+            
+            $sql = "SELECT Title, Content, Username, PostDate FROM Posts JOIN Users ON Posts.AuthorID = Users.UserID ORDER BY PostDate DESC LIMIT 5";
+            $stmt = $pdo->query($sql);
+            
+            while($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                echo "<article class='post'>";
+                echo "<h3><a href='#'>" . $row['Title'] . "</a></h3>";
+                echo "<p>作者：" . $row['Username'] . " | 发布时间：" . $row['PostDate'] . "</p>";
+                echo "<p>" . $row['Content'] . "</p>";
+                echo "</article>";
+            }
+            ?>
         </section>
     </main>
 
