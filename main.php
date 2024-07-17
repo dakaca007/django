@@ -19,7 +19,7 @@
                 <li><a href="#">分类</a></li>
                 <li><a href="#">关于我们</a></li>
                 <li><a href="login.php">登录</a></li>
-                <li><a href="register.php">注册</a></li>
+                <li><a href="regist.php">注册</a></li>
             </ul>
         </nav>
     </header>
