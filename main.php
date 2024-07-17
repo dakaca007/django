@@ -33,7 +33,7 @@
         <section class="categories">
             <h2>论坛分类</h2>
             <ul>
-                <?php include 'forum_backend.php'; getCategoies(); ?>
+                <?php include 'forum_backend.php'; getCategories(); ?>
             </ul>
         </section>
 
