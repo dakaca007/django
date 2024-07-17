@@ -7,12 +7,12 @@ $pdo = openDatabaseConnection();
 
 $sql = "SELECT p.*, u.Username, c.CategoryName FROM Posts p JOIN Users u ON p.AuthorID = u.UserID JOIN Categories c ON p.CategoryID = c.CategoryID WHERE PostID = ?";
 $stmt = $pdo->prepare($sql);
-$stmt->execute([$postID]);
+$stmt->execute([$userId]);
 $post = $stmt->fetch(PDO::FETCH_ASSOC);
 
 $sql = "SELECT c.*, u.Username FROM Comments c JOIN Users u ON c.AuthorID = u.UserID WHERE PostID = ? ORDER BY CommentDate ASC";
 $stmt = $pdo->prepare($sql);
-$stmt->execute([$postID]);
+$stmt->execute([$userId]);
 $comments = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
