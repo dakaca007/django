@@ -5,11 +5,12 @@ require_once 'database.php';
 // 获取用户提交的标题和内容
 $title = $_POST['title'];
 $content = $_POST['content'];
+$fenlei=$_POST['fenlei']
 $userId = $_SESSION['UserID'];
 
 // 插入到数据库中
 $pdo = openDatabaseConnection();
-$sql = "INSERT INTO Posts (Title, Content, AuthorID) VALUES (?, ?, ?)";
+$sql = "INSERT INTO Posts (Title, Content, AuthorID,CategoryID) VALUES (?, ?, ?, ?)";
 $stmt = $pdo->prepare($sql);
 $stmt->execute([$title, $content, $userId]);
 $pdo = null; 
