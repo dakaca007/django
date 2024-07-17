@@ -16,7 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $_SESSION['UserID'] = $user['UserID'];
         $_SESSION['Username'] = $user['Username'];
         $pdo = null; 
-        header("Location: index.php");
+        header("Location: main.php");
         exit();
     } else {
         $error = "用户名或密码错误";
