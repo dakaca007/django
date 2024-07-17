@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>主页</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -14,6 +15,7 @@
             overflow: hidden;
             background-color: #007BFF;
             padding: 10px 0;
+            position: relative;
         }
         .navbar a {
             float: left;
@@ -26,6 +28,14 @@
         }
         .navbar a:hover {
             background-color: #0056b3;
+        }
+        .menu-icon {
+            display: none;
+            float: right;
+            padding: 14px 20px;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
         }
         .container {
             padding: 20px;
@@ -86,7 +96,47 @@
             display: block;
             margin-bottom: 5px;
         }
+        @media (max-width: 600px) {
+            .container {
+                padding: 10px;
+            }
+            .form-container, .forum, .news, .messages {
+                padding: 10px;
+            }
+            form input, form textarea {
+                font-size: 14px;
+            }
+            form button {
+                font-size: 14px;
+                padding: 8px;
+            }
+            .navbar a {
+                float: none;
+                display: none;
+                width: 100%;
+                text-align: left;
+                padding: 10px;
+            }
+            .navbar a.active {
+                display: block;
+            }
+            .menu-icon {
+                display: block;
+            }
+        }
     </style>
+    <script>
+        function toggleMenu() {
+            const links = document.querySelectorAll('.navbar a');
+            for (let link of links) {
+                if (link.style.display === 'block') {
+                    link.style.display = 'none';
+                } else {
+                    link.style.display = 'block';
+                }
+            }
+        }
+    </script>
 </head>
 <body>
     <div class="navbar">
@@ -94,6 +144,7 @@
         <a href="#forum">论坛</a>
         <a href="#news">新闻</a>
         <a href="#messages">留言</a>
+        <div class="menu-icon" onclick="toggleMenu()">&#9776;</div>
     </div>
     
     <div class="container">
