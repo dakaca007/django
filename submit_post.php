@@ -12,7 +12,7 @@ $userId = $_SESSION['UserID'];
 $pdo = openDatabaseConnection();
 $sql = "INSERT INTO Posts (Title, Content, AuthorID,CategoryID) VALUES (?, ?, ?, ?)";
 $stmt = $pdo->prepare($sql);
-$stmt->execute([$title, $content, $userId]);
+$stmt->execute([$title, $content, $userId, $fenlei]);
 $pdo = null; 
 // 可以设置一个成功发布的提示信息
 $_SESSION['message'] = "成功发布新帖子！";
