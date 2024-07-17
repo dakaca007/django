@@ -19,6 +19,7 @@ $comments = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <?php require_once 'templates/header.php'; ?>
  <form method="post" action="submit_post.php">
     标题： <input type="text" name="title" required><br>
+    分类：<input type="text" name="fenlei" required><br>
     内容： <textarea name="content" required></textarea><br>
     <button type="submit">发布</button>
 </form>
