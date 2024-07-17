@@ -1,5 +1,5 @@
 <?php
-require_once 'database.php';
+require_once 'includes/database.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $pdo = openDatabaseConnection();
@@ -7,7 +7,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $password = password_hash($_POST['password'], PASSWORD_BCRYPT);
     $email = $_POST['email'];
 
-    $sql = "INSERT INTO Users (Username, Password, Email) VALUES (?, ?, ?)";
+    $sql = "INSERT INTO Users (Username, PasswordHash, Email) VALUES (?, ?, ?)";
     $stmt = $pdo->prepare($sql);
     $stmt->execute([$username, $password, $email]);
 
@@ -16,7 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 }
 ?>
 
-<?php require_once 'header.php'; ?>
+<?php require_once 'templates/header.php'; ?>
 
 <h2>注册</h2>
 <form method="post">
@@ -26,4 +26,4 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <button type="submit">注册</button>
 </form>
 
-<?php require_once 'footer.php'; ?>
+<?php require_once 'templates/footer.php'; ?>
