@@ -30,7 +30,7 @@ if (!$post) {
     echo "未找到相关文章";
     exit();
 }
-    >
+    ?>
 <article>
     <h2><?php echo $post['Title']; ?></h2>
     <p><?php echo $post['Content']; ?></p>
