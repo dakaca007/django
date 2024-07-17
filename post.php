@@ -2,7 +2,7 @@
 session_start();
 require_once 'database.php';
 
-$postID = $_GET['id'];
+$postID = $_GET['UserID'];
 $pdo = openDatabaseConnection();
 
 $sql = "SELECT p.*, u.Username, c.CategoryName FROM Posts p JOIN Users u ON p.AuthorID = u.UserID JOIN Categories c ON p.CategoryID = c.CategoryID WHERE PostID = ?";
