@@ -10,7 +10,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $sql = "INSERT INTO Users (Username, PasswordHash, Email) VALUES (?, ?, ?)";
     $stmt = $pdo->prepare($sql);
     $stmt->execute([$username, $password, $email]);
-
+    $pdo = null; 
     header("Location: login.php");
     exit();
 }
