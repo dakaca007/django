@@ -17,7 +17,20 @@ $comments = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <?php require_once 'templates/header.php'; ?>
+<?php
+if (empty($post)) {
+    // 如果 $post 为空，可以输出提示信息或者重定向到其他页面
+    echo "未找到相关文章";
+    exit();
+}
 
+
+if (!$post) {
+    // 如果 $post 为 false，可以输出提示信息或者重定向到其他页面
+    echo "未找到相关文章";
+    exit();
+}
+    >
 <article>
     <h2><?php echo $post['Title']; ?></h2>
     <p><?php echo $post['Content']; ?></p>
