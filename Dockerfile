@@ -18,13 +18,7 @@ RUN mkdir -p /var/log/nginx /var/lib/nginx /var/www/html/php \
     && chown -R www-data:www-data /var/log/nginx /var/lib/nginx /var/www/html \
     && chmod 755 /var/log/nginx /var/lib/nginx
 
-# 下载并安装GoTTY
-RUN curl -LO https://github.com/yudai/gotty/releases/download/v1.0.1/gotty_linux_amd64.tar.gz \
-    && tar zxvf gotty_linux_amd64.tar.gz \
-    && mv gotty /usr/local/bin/ \
-    && chmod +x /usr/local/bin/gotty \
-    && rm gotty_linux_amd64.tar.gz
-
+ 
 
  
 WORKDIR /var/www/html/php
