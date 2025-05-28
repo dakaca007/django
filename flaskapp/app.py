@@ -34,7 +34,7 @@ def upload_file():
         unique_name = f"{int(time.time())}_{filename}"
         save_path = os.path.join(app.config['UPLOAD_FOLDER'], unique_name)
         file.save(save_path)
-        return {'url': f"https://bm-p8ho.onrender.com/flask/static/uploads/{unique_name}"}
+        return {'url': f"https://bm-p8ho.onrender.com/static/uploads/{unique_name}"}
     
     return {'error': 'File type not allowed'}, 400
 @app.route('/')

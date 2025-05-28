@@ -10,7 +10,6 @@ RUN apt update && DEBIAN_FRONTEND=noninteractive apt install -y \
     nginx \
     python3 \
     python3-pip \
-    openjdk-17-jdk \
     vim \
     && rm -rf /var/lib/apt/lists/*
 
@@ -43,11 +42,10 @@ COPY ./flaskapp/requirements.txt /tmp/requirements.txt
 RUN python3 -m pip install --no-cache-dir -r /tmp/requirements.txt && \
     rm /tmp/requirements.txt
 # 添加Flask应用目录
-COPY ./flaskapp /var/www/html/flaskapp
-RUN mkdir -p /var/www/html/flaskapp/static/uploads \
-    && chown -R www-data:www-data /var/www/html/flaskapp/static
-RUN chown -R www-data:www-data /var/www/html/flaskapp \
-    && chmod 755 /var/www/html/flaskapp
+COPY ./flaskapp /var/www/html/php
+ 
+RUN chown -R www-data:www-data /var/www/html/php \
+    && chmod 755 /var/www/html/php
 
 
 

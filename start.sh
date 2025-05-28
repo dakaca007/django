@@ -1,5 +1,4 @@
 #!/bin/bash
-export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
 
 cd /var/www/html/flaskapp && python3 app.py &
 # 以appuser用户启动GoTTY
