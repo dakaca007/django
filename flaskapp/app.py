@@ -14,7 +14,7 @@ os.makedirs(CODE_DIR, exist_ok=True)
 
 @app.route('/')
 def index():
-    return render_template('editor.html')
+    return render_template('index.html')
 
 @app.route('/execute', methods=['POST'])
 def execute_code():
