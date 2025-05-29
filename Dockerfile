@@ -1,6 +1,10 @@
 FROM ubuntu:22.04
 
-# 安装基础依赖（移除Nginx和不必要工具）
+# 替换APT为阿里云镜像源
+RUN sed -i 's/archive.ubuntu.com/mirrors.aliyun.com/g' /etc/apt/sources.list && \
+    sed -i 's/security.ubuntu.com/mirrors.aliyun.com/g' /etc/apt/sources.list
+
+# 安装基础依赖
 RUN apt update && DEBIAN_FRONTEND=noninteractive apt install -y \
     python3 \
     python3-pip \
@@ -13,11 +17,13 @@ WORKDIR /app
 COPY ./flaskapp /app
 COPY ./flaskapp/requirements.txt /app/requirements.txt
 
-# 安装Python依赖
-RUN python3 -m pip install --no-cache-dir -r requirements.txt
+# 使用阿里云PyPI镜像安装依赖
+RUN python3 -m pip install --no-cache-dir -r requirements.txt \
+    -i https://mirrors.aliyun.com/pypi/simple/ \
+    --trusted-host mirrors.aliyun.com
 
 # 暴露Flask默认端口
 EXPOSE 80
 
-# 启动命令（假设使用Flask内置服务器）
+# 启动命令
 CMD ["python3", "app.py"]
