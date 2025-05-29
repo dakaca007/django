@@ -20,7 +20,7 @@ RUN apt update && DEBIAN_FRONTEND=noninteractive apt install -y \
 WORKDIR /app
 
 # 复制应用代码
-COPY . /app
+COPY ./flaskapp /app
 
 # 使用阿里云PyPI镜像安装Python依赖
 RUN python3 -m pip install --no-cache-dir -r requirements.txt \
