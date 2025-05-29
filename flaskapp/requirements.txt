@@ -6,3 +6,5 @@ werkzeug
 requests
 flask-socketio
 eventlet
+python-dotenv   # 环境变量管理
+psutil   
