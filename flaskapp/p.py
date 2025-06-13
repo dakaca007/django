@@ -7,6 +7,8 @@ import random
 from bs4 import BeautifulSoup, SoupStrainer
 import concurrent.futures
 from functools import lru_cache
+import threading
+import queue
 
 # 配置项
 START_ID = 861573
@@ -24,6 +26,11 @@ HEADERS = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"}
 session = requests.Session()
 session.headers.update(HEADERS)
 
+# 线程安全队列和锁
+meta_queue = queue.Queue()
+fail_lock = threading.Lock()
+progress_lock = threading.Lock()
+
 def load_progress():
     if os.path.exists(PROGRESS_JSON):
         try:
@@ -37,15 +44,17 @@ def load_progress():
     return START_ID, INITIAL_DATE
 
 def save_progress(song_id, last_date):
-    with open(PROGRESS_JSON, "w", encoding="utf-8") as f:
-        json.dump({
-            "song_id": song_id,
-            "last_date": last_date.date().isoformat()
-        }, f)
+    with progress_lock:
+        with open(PROGRESS_JSON, "w", encoding="utf-8") as f:
+            json.dump({
+                "song_id": song_id,
+                "last_date": last_date.date().isoformat()
+            }, f)
 
 def log_failure(song_id):
-    with open(FAILED_FILE, "a", encoding="utf-8") as f:
-        f.write(f"{song_id}\n")
+    with fail_lock:
+        with open(FAILED_FILE, "a", encoding="utf-8") as f:
+            f.write(f"{song_id}\n")
 
 def sanitize_filename(name):
     return "".join(c for c in name if c.isalnum() or c in (" ", "_", "-")).strip()
@@ -87,7 +96,7 @@ def extract_song_info(song_id):
             "release_date": release,
             "album": album,
             "has_lyric": bool(lyric),
-            "lyric_url": f"https://www.9ku.com/lyric/{song_id}.htm",  # 新增歌词页面地址
+            "lyric_url": f"https://www.9ku.com/lyric/{song_id}.htm",
         }
     return retry(_)
 
@@ -114,29 +123,16 @@ def find_mp3_url(song_id, base_date):
     print(f"🚫 未找到 MP3（ID:{song_id}）")
     return None, base_date
 
-def append_song_meta(meta):
-    all_meta = []
-    if os.path.exists(SONGS_META_FILE):
-        try:
-            with open(SONGS_META_FILE, "r", encoding="utf-8") as f:
-                all_meta = json.load(f)
-        except Exception:
-            print("⚠️ 无法读取原歌曲列表，创建新文件")
-
-    all_meta.append(meta)
-    with open(SONGS_META_FILE, "w", encoding="utf-8") as f:
-        json.dump(all_meta, f, ensure_ascii=False, indent=2)
-
 def process_one(song_id, cur_date):
     info = extract_song_info(song_id)
     if not info:
         log_failure(song_id)
-        return song_id, None
+        return None, song_id, None
 
     mp3_url, new_date = find_mp3_url(song_id, cur_date)
     if not mp3_url:
         log_failure(song_id)
-        return song_id, None
+        return None, song_id, None
 
     filename = sanitize_filename(f"{info['title']}_{info['artist']}_{song_id}.mp3")
 
@@ -147,28 +143,66 @@ def process_one(song_id, cur_date):
         "release_date": info.get("release_date"),
         "album": info.get("album"),
         "has_lyric": info["has_lyric"],
-        "lyric_url": info["lyric_url"],  # 保存歌词地址
+        "lyric_url": info["lyric_url"],
         "mp3_url": mp3_url,
         "filename": filename,
     }
-    append_song_meta(meta_entry)
-    print(f"📦 保存元数据（ID:{song_id}）")
 
-    return song_id, new_date
+    return meta_entry, song_id, new_date
+
+def worker(song_id, cur_date):
+    meta, sid, nd = process_one(song_id, cur_date)
+    if meta:
+        meta_queue.put(meta)
+    return sid, nd
+
+def meta_writer_thread(stop_event):
+    all_meta = []
+    # 如果已有文件，先加载历史数据，防止覆盖丢失
+    if os.path.exists(SONGS_META_FILE):
+        try:
+            with open(SONGS_META_FILE, "r", encoding="utf-8") as f:
+                all_meta = json.load(f)
+        except Exception:
+            print("⚠️ 无法读取原歌曲列表，写入新文件")
+
+    while not stop_event.is_set() or not meta_queue.empty():
+        try:
+            meta = meta_queue.get(timeout=1)
+            all_meta.append(meta)
+            # 每次写入完整数据，保证数据持久
+            with open(SONGS_META_FILE, "w", encoding="utf-8") as f:
+                json.dump(all_meta, f, ensure_ascii=False, indent=2)
+            meta_queue.task_done()
+        except queue.Empty:
+            continue
 
 def process_batch(batch_ids, cur_date):
-    with concurrent.futures.ThreadPoolExecutor(max_workers=MAX_WORKERS) as ex:
-        futures = [ex.submit(process_one, sid, cur_date) for sid in batch_ids]
+    # 记录这批次的最大song_id和最新日期，用于进度更新
+    max_sid = None
+    latest_date = cur_date
+
+    with concurrent.futures.ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
+        futures = {executor.submit(worker, sid, cur_date): sid for sid in batch_ids}
         for fut in concurrent.futures.as_completed(futures):
             sid, nd = fut.result()
-            if nd:
-                cur_date = nd
-            save_progress(sid + 1, cur_date)
-    return cur_date
+            if max_sid is None or sid > max_sid:
+                max_sid = sid
+            if nd and nd > latest_date:
+                latest_date = nd
+
+    if max_sid is not None:
+        save_progress(max_sid + 1, latest_date)
+    return latest_date
 
 def main():
     sid, cdate = load_progress()
     print(f"🚀 开始采集，起始 ID: {sid}, 起始日期: {cdate.date()}")
+
+    stop_event = threading.Event()
+    writer = threading.Thread(target=meta_writer_thread, args=(stop_event,), daemon=True)
+    writer.start()
+
     while sid < END_ID:
         end = min(sid + BATCH_SIZE, END_ID)
         print(f"\n🔄 批次采集 ID {sid}–{end - 1}")
@@ -177,6 +211,12 @@ def main():
         dt = random.uniform(0.5, 1.5)
         print(f"⏳ 等待 {dt:.1f}s 继续")
         time.sleep(dt)
+
+    # 等待队列写完数据
+    meta_queue.join()
+    stop_event.set()
+    writer.join()
+
     print("🎉 所有采集任务完成")
     session.close()
 
