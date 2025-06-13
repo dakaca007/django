@@ -4,9 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no" />
   <title>酷狗音乐 - 在线播放器</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css">
+  <link rel="stylesheet" href="https/cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css">
   <style>
-    /* 保持原有CSS样式不变 */
+    /* 原有样式保持不变 */
     * {
       box-sizing: border-box;
       margin: 0;
@@ -611,7 +611,7 @@
     <!-- 右侧播放器 -->
     <div id="player" style="display: none;">
       <div class="cover-container">
-        <img id="cover-image" src="https://picsum.photos/300/300?music=1" alt="专辑封面">
+        <img id="cover-image" src="https/picsum.photos/300/300?music=1" alt="专辑封面">
         <div class="vinyl-overlay"></div>
         <div class="vinyl-center"></div>
       </div>
@@ -795,6 +795,9 @@
     function playSong(index, filteredSongs = songs) {
       if (index < 0 || index >= filteredSongs.length) return;
       
+      // 停止当前播放
+      stopCurrentPlayback();
+      
       currentSongIndex = filteredSongs.findIndex(s => s.song_id === filteredSongs[index].song_id);
       const song = filteredSongs[index];
       currentSongId = song.song_id;
@@ -802,7 +805,9 @@
       // 更新播放器显示
       nowPlaying.textContent = song.title;
       songArtist.textContent = song.artist;
-      coverImage.src = song.album ? `https://picsum.photos/300/300?album=${encodeURIComponent(song.album)}` : 'https://picsum.photos/300/300?music=1';
+      coverImage.src = song.album 
+        ? `https/picsum.photos/300/300?album=${encodeURIComponent(song.album)}` 
+        : 'https/picsum.photos/300/300?music=1';
       playerDiv.style.display = 'block';
       
       // 设置音频源
@@ -821,11 +826,27 @@
           renderLyrics();
         });
       
-      // 播放
+      // 自动播放
       if (isPlaying) {
-        audio.play()
-          .catch(err => console.error('播放失败:', err));
+        setTimeout(() => {
+          audio.play()
+            .catch(err => console.error('播放失败:', err));
+        }, 50);
       }
+    }
+
+    // 停止当前播放
+    function stopCurrentPlayback() {
+      if (!audio.paused) {
+        audio.pause();
+        audio.currentTime = 0;
+        playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
+        playerDiv.classList.remove('playing');
+      }
+      isPlaying = false;
+      currentLyricIndex = 0;
+      progressBar.style.width = '0%';
+      currentTimeEl.textContent = '0:00';
     }
 
     // 解析歌词
@@ -900,6 +921,7 @@
           .then(() => {
             playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
             playerDiv.classList.add('playing');
+            isPlaying = true;
           })
           .catch(err => {
             console.error('播放失败:', err);
@@ -908,6 +930,7 @@
         audio.pause();
         playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
         playerDiv.classList.remove('playing');
+        isPlaying = false;
       }
     }
 
