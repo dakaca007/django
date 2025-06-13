@@ -1,271 +1,231 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>本地音乐播放器</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      max-width: 600px;
-      margin: 1em auto;
-      padding: 0 1em;
-      background: #f7f7f7;
-    }
-    h1 { text-align: center; }
-    #search {
-      width: 100%;
-      padding: 0.5em;
-      margin-bottom: 1em;
-      font-size: 1em;
-    }
-    #song-list {
-      list-style: none;
-      padding: 0;
-      max-height: 300px;
-      overflow-y: auto;
-      border: 1px solid #ddd;
-      background: #fff;
-    }
-    #song-list li {
-      padding: 0.5em;
-      border-bottom: 1px solid #eee;
-      cursor: pointer;
-    }
-    #song-list li:hover, #song-list li.active {
-      background-color: #cce5ff;
-    }
-    #player {
-      margin-top: 1em;
-      background: #fff;
-      padding: 1em;
-      border-radius: 8px;
-      box-shadow: 0 0 8px #ccc;
-    }
-    #lyrics-container {
-      height: 200px;
-      overflow: hidden;
-      position: relative;
-      border-top: 1px solid #ccc;
-      margin-top: 1em;
-      padding-top: 0.5em;
-    }
-    #lyrics {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      transition: top 0.3s;
-      text-align: center;
-    }
-    .lyric-line {
-      color: #666;
-      font-size: 0.95em;
-      line-height: 2em;
-    }
-    .lyric-line.active {
-      color: #d63384;
-      font-weight: bold;
-      font-size: 1.1em;
-    }
-    button {
-      padding: 0.5em 1em;
-      margin: 0 0.3em;
-      font-size: 1em;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>在线音乐播放器</title>
+    <style>
+        /* 保持原有的样式，只做少量调整 */
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        #search {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+        }
+        #song-list {
+            list-style: none;
+            padding: 0;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        #song-list li {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+        }
+        #song-list li:hover {
+            background-color: #f5f5f5;
+        }
+        #player {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 5px;
+        }
+        #lyrics {
+            margin-top: 20px;
+            height: 300px;
+            overflow-y: auto;
+            text-align: center;
+        }
+        .lyric-line {
+            margin: 10px 0;
+            color: #666;
+        }
+        .lyric-line.active {
+            color: #000;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+    </style>
 </head>
 <body>
-  <h1>本地音乐播放器</h1>
-  <input type="text" id="search" placeholder="搜索歌曲或歌手..." />
-
-  <ul id="song-list"></ul>
-
-  <div id="player" style="display:none;">
-    <div><strong id="current-song"></strong></div>
-    <audio id="audio" controls></audio>
-    <div style="margin-top:10px;">
-      <button id="prev-btn">上一首</button>
-      <button id="play-pause-btn">播放</button>
-      <button id="next-btn">下一首</button>
+    <h1>在线音乐播放器</h1>
+    <input type="text" id="search" placeholder="搜索歌曲或歌手...">
+    
+    <ul id="song-list"></ul>
+    
+    <div id="player" style="display: none;">
+        <h2 id="now-playing"></h2>
+        <audio id="audio" controls></audio>
+        <div>
+            <button id="prev">上一首</button>
+            <button id="play-pause">播放</button>
+            <button id="next">下一首</button>
+        </div>
+        <div id="lyrics"></div>
     </div>
-    <div id="lyrics-container">
-      <div id="lyrics"></div>
-    </div>
-  </div>
 
-  <script>
-    const songListEl = document.getElementById('song-list');
-    const audio = document.getElementById('audio');
-    const currentSongEl = document.getElementById('current-song');
-    const playPauseBtn = document.getElementById('play-pause-btn');
-    const prevBtn = document.getElementById('prev-btn');
-    const nextBtn = document.getElementById('next-btn');
-    const lyricsContainer = document.getElementById('lyrics-container');
-    const lyricsEl = document.getElementById('lyrics');
-    const searchInput = document.getElementById('search');
-    const player = document.getElementById('player');
+    <script>
+        const songList = document.getElementById('song-list');
+        const searchInput = document.getElementById('search');
+        const audio = document.getElementById('audio');
+        const nowPlaying = document.getElementById('now-playing');
+        const playerDiv = document.getElementById('player');
+        const lyricsDiv = document.getElementById('lyrics');
+        const playPauseBtn = document.getElementById('play-pause');
+        const prevBtn = document.getElementById('prev');
+        const nextBtn = document.getElementById('next');
 
-    let songs = [];
-    let filteredSongs = [];
-    let currentIndex = 0;
-    let isPlaying = false;
-    let lyrics = [];
+        let songs = [];
+        let currentSongIndex = 0;
+        let lyrics = [];
+        let isPlaying = false;
 
-    function fetchSongs() {
-      fetch('/songs')
-        .then(res => res.json())
-        .then(data => {
-          songs = data.songs;
-          filteredSongs = songs;
-          renderSongList();
-        });
-    }
-
-    function renderSongList() {
-      songListEl.innerHTML = '';
-      filteredSongs.forEach((song, idx) => {
-        const li = document.createElement('li');
-        li.textContent = `${song.name} - ${song.artist}`;
-        li.dataset.index = idx;
-        if (idx === currentIndex) li.classList.add('active');
-        li.addEventListener('click', () => {
-          currentIndex = idx;
-          loadCurrentSong();
-          playAudio();
-          renderSongList();
-        });
-        songListEl.appendChild(li);
-      });
-    }
-
-    function loadCurrentSong() {
-      if (!filteredSongs.length) {
-        player.style.display = 'none';
-        return;
-      }
-      const song = filteredSongs[currentIndex];
-      currentSongEl.textContent = `${song.name} - ${song.artist}`;
-      audio.src = song.url;
-      player.style.display = 'block';
-      fetchLyrics(song.filename);
-    }
-
-    function playAudio() {
-      audio.play();
-      isPlaying = true;
-      playPauseBtn.textContent = '暂停';
-    }
-
-    function pauseAudio() {
-      audio.pause();
-      isPlaying = false;
-      playPauseBtn.textContent = '播放';
-    }
-
-    playPauseBtn.addEventListener('click', () => {
-      if (isPlaying) pauseAudio();
-      else playAudio();
-    });
-
-    prevBtn.addEventListener('click', () => {
-      currentIndex = (currentIndex - 1 + filteredSongs.length) % filteredSongs.length;
-      loadCurrentSong();
-      playAudio();
-      renderSongList();
-    });
-
-    nextBtn.addEventListener('click', () => {
-      currentIndex = (currentIndex + 1) % filteredSongs.length;
-      loadCurrentSong();
-      playAudio();
-      renderSongList();
-    });
-
-    audio.addEventListener('ended', () => {
-      nextBtn.click();
-    });
-
-    searchInput.addEventListener('input', () => {
-      const q = searchInput.value.trim().toLowerCase();
-      filteredSongs = songs.filter(s =>
-        s.name.toLowerCase().includes(q) || s.artist.toLowerCase().includes(q)
-      );
-      currentIndex = 0;
-      renderSongList();
-      if (filteredSongs.length > 0) {
-        loadCurrentSong();
-      } else {
-        player.style.display = 'none';
-      }
-    });
-
-    function fetchLyrics(filename) {
-      fetch(`/lyrics/${filename}`)
-        .then(res => res.text())
-        .then(text => {
-          lyrics = parseLRC(text);
-          renderLyrics();
-        });
-    }
-
-    function parseLRC(text) {
-      const lines = text.split('\n');
-      const result = [];
-      const timeRegex = /\[(\d{2}):(\d{2})(\.\d{2,3})?\]/;
-      for (const line of lines) {
-        const match = timeRegex.exec(line);
-        if (match) {
-          const min = parseInt(match[1]);
-          const sec = parseInt(match[2]);
-          const ms = parseFloat(match[3] || 0);
-          const time = min * 60 + sec + ms;
-          const content = line.replace(timeRegex, '').trim();
-          if (content) {
-            result.push({ time, content });
-          }
+        // 加载歌曲列表
+        function loadSongs(query = '') {
+            fetch(`/songs?q=${encodeURIComponent(query)}`)
+                .then(res => res.json())
+                .then(data => {
+                    songs = data.songs;
+                    renderSongList();
+                });
         }
-      }
-      result.sort((a, b) => a.time - b.time);
-      return result;
-    }
 
-    function renderLyrics() {
-      lyricsEl.innerHTML = '';
-      for (let i = 0; i < lyrics.length; i++) {
-        const div = document.createElement('div');
-        div.className = 'lyric-line';
-        div.textContent = lyrics[i].content;
-        lyricsEl.appendChild(div);
-      }
-    }
+        // 渲染歌曲列表
+        function renderSongList() {
+            songList.innerHTML = '';
+            songs.forEach((song, index) => {
+                const li = document.createElement('li');
+                li.textContent = `${song.title} - ${song.artist}`;
+                li.dataset.index = index;
+                li.addEventListener('click', () => playSong(index));
+                songList.appendChild(li);
+            });
+        }
 
-    function updateLyricsHighlight() {
-      if (!lyrics.length) return;
-      const currentTime = audio.currentTime;
-      let index = lyrics.findIndex((line, i) => {
-        return i < lyrics.length - 1 && currentTime >= line.time && currentTime < lyrics[i + 1].time;
-      });
-      if (index === -1 && currentTime >= lyrics[lyrics.length - 1].time) {
-        index = lyrics.length - 1;
-      }
+        // 播放歌曲
+        function playSong(index) {
+            if (index < 0 || index >= songs.length) return;
+            
+            currentSongIndex = index;
+            const song = songs[currentSongIndex];
+            
+            nowPlaying.textContent = `${song.title} - ${song.artist}`;
+            audio.src = song.url;
+            playerDiv.style.display = 'block';
+            
+            // 加载歌词
+            fetch(`/lyric/${song.id}`)
+                .then(res => res.text())
+                .then(text => {
+                    lyrics = parseLyrics(text);
+                    renderLyrics();
+                });
+            
+            if (isPlaying) {
+                audio.play();
+            }
+        }
 
-      const lines = lyricsEl.querySelectorAll('.lyric-line');
-      lines.forEach((line, i) => {
-        line.classList.toggle('active', i === index);
-      });
+        // 解析歌词
+        function parseLyrics(text) {
+            const lines = text.split('\n');
+            const result = [];
+            const timeRegex = /\[(\d{2}):(\d{2})\.(\d{2,3})\]/;
+            
+            for (const line of lines) {
+                const match = timeRegex.exec(line);
+                if (match) {
+                    const minutes = parseInt(match[1]);
+                    const seconds = parseInt(match[2]);
+                    const milliseconds = parseInt(match[3]);
+                    const time = minutes * 60 + seconds + milliseconds / 1000;
+                    const text = line.replace(timeRegex, '').trim();
+                    if (text) {
+                        result.push({ time, text });
+                    }
+                }
+            }
+            
+            return result;
+        }
 
-      if (index !== -1) {
-        const lineHeight = lines[0].offsetHeight;
-        const containerHeight = lyricsContainer.clientHeight;
-        const scrollTop = index * lineHeight - containerHeight / 2 + lineHeight / 2;
-        lyricsEl.style.top = `-${Math.max(0, scrollTop)}px`;
-      }
-    }
+        // 渲染歌词
+        function renderLyrics() {
+            lyricsDiv.innerHTML = '';
+            lyrics.forEach(line => {
+                const div = document.createElement('div');
+                div.className = 'lyric-line';
+                div.textContent = line.text;
+                div.dataset.time = line.time;
+                lyricsDiv.appendChild(div);
+            });
+        }
 
-    audio.addEventListener('timeupdate', updateLyricsHighlight);
+        // 更新歌词高亮
+        function updateLyrics() {
+            const currentTime = audio.currentTime;
+            const lines = lyricsDiv.querySelectorAll('.lyric-line');
+            
+            let activeLine = null;
+            for (let i = 0; i < lyrics.length; i++) {
+                if (i < lyrics.length - 1) {
+                    if (currentTime >= lyrics[i].time && currentTime < lyrics[i + 1].time) {
+                        activeLine = i;
+                        break;
+                    }
+                } else if (currentTime >= lyrics[i].time) {
+                    activeLine = i;
+                }
+            }
+            
+            lines.forEach((line, index) => {
+                line.classList.toggle('active', index === activeLine);
+            });
+            
+            if (activeLine !== null) {
+                lines[activeLine].scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
 
-    fetchSongs();
-  </script>
+        // 事件监听
+        searchInput.addEventListener('input', () => {
+            loadSongs(searchInput.value);
+        });
+
+        playPauseBtn.addEventListener('click', () => {
+            if (audio.paused) {
+                audio.play();
+                playPauseBtn.textContent = '暂停';
+                isPlaying = true;
+            } else {
+                audio.pause();
+                playPauseBtn.textContent = '播放';
+                isPlaying = false;
+            }
+        });
+
+        prevBtn.addEventListener('click', () => {
+            playSong((currentSongIndex - 1 + songs.length) % songs.length);
+        });
+
+        nextBtn.addEventListener('click', () => {
+            playSong((currentSongIndex + 1) % songs.length);
+        });
+
+        audio.addEventListener('timeupdate', updateLyrics);
+        audio.addEventListener('ended', () => {
+            playSong((currentSongIndex + 1) % songs.length);
+        });
+
+        // 初始化
+        loadSongs();
+    </script>
 </body>
 </html>
