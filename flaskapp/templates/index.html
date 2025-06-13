@@ -3,19 +3,14 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no" />
-    <title>在线音乐播放器</title>
+    <title>酷狗风格在线音乐播放器</title>
     <style>
-        html {
-            font-size: 16px;
-            -webkit-text-size-adjust: 100%;
-        }
+        html { font-size: 16px; -webkit-text-size-adjust: 100%; }
         body {
             font-family: Arial, sans-serif;
             max-width: 800px;
-            width: 100%;
             margin: 0 auto;
             padding: 20px;
-            box-sizing: border-box;
             background: #fff;
             color: #333;
         }
@@ -26,15 +21,12 @@
             font-size: 1rem;
             border-radius: 6px;
             border: 1px solid #ccc;
-            box-sizing: border-box;
         }
         #song-list {
             list-style: none;
             padding: 0;
             max-height: 400px;
             overflow-y: auto;
-            -webkit-overflow-scrolling: touch; /* iOS 滚动优化 */
-            margin: 0;
             border: 1px solid #eee;
             border-radius: 6px;
         }
@@ -42,11 +34,6 @@
             padding: 12px 15px;
             border-bottom: 1px solid #eee;
             cursor: pointer;
-            font-size: 1rem;
-            user-select: none;
-        }
-        #song-list li:last-child {
-            border-bottom: none;
         }
         #song-list li:hover,
         #song-list li:active {
@@ -57,20 +44,17 @@
             padding: 20px;
             background: #f9f9f9;
             border-radius: 8px;
-            box-sizing: border-box;
         }
         #now-playing {
             font-size: 1.2rem;
             margin-bottom: 10px;
             font-weight: bold;
-            color: #222;
             word-break: break-word;
         }
         audio {
             width: 100%;
-            outline: none;
-            border-radius: 6px;
             margin-bottom: 10px;
+            border-radius: 6px;
         }
         #player > div > button {
             font-size: 1rem;
@@ -80,12 +64,9 @@
             border: 1px solid #ccc;
             background-color: #fff;
             cursor: pointer;
-            user-select: none;
             transition: background-color 0.2s ease;
-            touch-action: manipulation;
         }
-        #player > div > button:hover,
-        #player > div > button:active {
+        #player > div > button:hover {
             background-color: #e6e6e6;
         }
         #lyrics {
@@ -95,9 +76,7 @@
             text-align: center;
             font-size: 1rem;
             color: #666;
-            -webkit-overflow-scrolling: touch;
             padding: 0 10px;
-            box-sizing: border-box;
         }
         .lyric-line {
             margin: 10px 0;
@@ -108,41 +87,17 @@
             font-weight: bold;
             font-size: 1.2rem;
         }
-
-        /* 移动端媒体查询 */
         @media (max-width: 600px) {
-            body {
-                padding: 10px;
-            }
-            #player {
-                padding: 15px;
-            }
-            #song-list li {
-                font-size: 1rem;
-                padding: 12px 10px;
-            }
-            #lyrics {
-                height: 200px;
-                font-size: 1rem;
-            }
-            #player > div > button {
-                padding: 12px 18px;
-                font-size: 1.1rem;
-                margin: 0 3px;
-            }
-            #now-playing {
-                font-size: 1.1rem;
-                margin-bottom: 8px;
-            }
+            body { padding: 10px; }
+            #lyrics { height: 200px; font-size: 1rem; }
+            #player > div > button { padding: 10px 16px; font-size: 1rem; }
         }
     </style>
 </head>
 <body>
-    <h1>在线音乐播放器</h1>
+    <h1>酷狗风格播放器</h1>
     <input type="text" id="search" placeholder="搜索歌曲或歌手..." />
-
     <ul id="song-list"></ul>
-
     <div id="player" style="display: none;">
         <h2 id="now-playing"></h2>
         <audio id="audio" controls></audio>
@@ -153,7 +108,6 @@
         </div>
         <div id="lyrics"></div>
     </div>
-
     <script>
         const songList = document.getElementById('song-list');
         const searchInput = document.getElementById('search');
@@ -180,7 +134,6 @@
                 });
         }
 
-        // 渲染歌曲列表
         function renderSongList() {
             songList.innerHTML = '';
             songs.forEach((song, index) => {
@@ -192,55 +145,52 @@
             });
         }
 
-        // 播放歌曲
         function playSong(index) {
             if (index < 0 || index >= songs.length) return;
-
             currentSongIndex = index;
-            const song = songs[currentSongIndex];
-
+            const song = songs[index];
             nowPlaying.textContent = `${song.title} - ${song.artist}`;
-            audio.src = `/play/${song.song_id}`;
-
+            const songUrl = `/play/${song.song_id}`;
+            audio.src = songUrl;
+            cacheSong(songUrl); // 主动缓存
             playerDiv.style.display = 'block';
-
-            // 加载歌词
             fetch(`/lyric/${song.song_id}`)
                 .then(res => res.text())
                 .then(text => {
                     lyrics = parseLyrics(text);
                     renderLyrics();
                 });
+            if (isPlaying) audio.play();
+        }
 
-            if (isPlaying) {
-                audio.play();
+        function cacheSong(url) {
+            if ('caches' in window) {
+                caches.open('music-cache').then(cache => {
+                    cache.match(url).then(response => {
+                        if (!response) {
+                            fetch(url).then(res => cache.put(url, res.clone()));
+                        }
+                    });
+                });
             }
         }
 
-        // 解析歌词
         function parseLyrics(text) {
             const lines = text.split('\n');
             const result = [];
             const timeRegex = /\[(\d{2}):(\d{2})\.(\d{2,3})\]/;
-
             for (const line of lines) {
                 const match = timeRegex.exec(line);
                 if (match) {
-                    const minutes = parseInt(match[1]);
-                    const seconds = parseInt(match[2]);
-                    const milliseconds = parseInt(match[3]);
-                    const time = minutes * 60 + seconds + milliseconds / 1000;
-                    const text = line.replace(timeRegex, '').trim();
-                    if (text) {
-                        result.push({ time, text });
-                    }
+                    const [_, min, sec, ms] = match;
+                    const time = parseInt(min) * 60 + parseInt(sec) + parseInt(ms) / 1000;
+                    const content = line.replace(timeRegex, '').trim();
+                    if (content) result.push({ time, text: content });
                 }
             }
-
             return result;
         }
 
-        // 渲染歌词
         function renderLyrics() {
             lyricsDiv.innerHTML = '';
             lyrics.forEach(line => {
@@ -252,37 +202,27 @@
             });
         }
 
-        // 更新歌词高亮
         function updateLyrics() {
             const currentTime = audio.currentTime;
             const lines = lyricsDiv.querySelectorAll('.lyric-line');
-
-            let activeLine = null;
+            let activeIndex = null;
             for (let i = 0; i < lyrics.length; i++) {
-                if (i < lyrics.length - 1) {
-                    if (currentTime >= lyrics[i].time && currentTime < lyrics[i + 1].time) {
-                        activeLine = i;
-                        break;
-                    }
-                } else if (currentTime >= lyrics[i].time) {
-                    activeLine = i;
+                if (i < lyrics.length - 1 && currentTime >= lyrics[i].time && currentTime < lyrics[i + 1].time) {
+                    activeIndex = i;
+                    break;
+                } else if (i === lyrics.length - 1 && currentTime >= lyrics[i].time) {
+                    activeIndex = i;
                 }
             }
-
-            lines.forEach((line, index) => {
-                line.classList.toggle('active', index === activeLine);
+            lines.forEach((line, idx) => {
+                line.classList.toggle('active', idx === activeIndex);
             });
-
-            if (activeLine !== null) {
-                lines[activeLine].scrollIntoView({ behavior: 'smooth', block: 'center' });
+            if (activeIndex !== null) {
+                lines[activeIndex].scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
         }
 
-        // 事件监听
-        searchInput.addEventListener('input', () => {
-            loadSongs(searchInput.value);
-        });
-
+        searchInput.addEventListener('input', () => loadSongs(searchInput.value));
         playPauseBtn.addEventListener('click', () => {
             if (audio.paused) {
                 audio.play();
@@ -294,15 +234,12 @@
                 isPlaying = false;
             }
         });
-
         prevBtn.addEventListener('click', () => {
             playSong((currentSongIndex - 1 + songs.length) % songs.length);
         });
-
         nextBtn.addEventListener('click', () => {
             playSong((currentSongIndex + 1) % songs.length);
         });
-
         audio.addEventListener('timeupdate', updateLyrics);
         audio.addEventListener('ended', () => {
             playSong((currentSongIndex + 1) % songs.length);
