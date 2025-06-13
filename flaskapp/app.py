@@ -69,4 +69,4 @@ def get_lyric(song_id):
     return ta.text.strip() if ta else ""
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host='0.0.0.0', port=80, debug=True)
