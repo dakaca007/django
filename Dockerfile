@@ -6,12 +6,9 @@ RUN sed -i 's/archive.ubuntu.com/mirrors.aliyun.com/g' /etc/apt/sources.list && 
 
 # 安装基础依赖
 RUN apt update && DEBIAN_FRONTEND=noninteractive apt install -y \
-    build-essential \
     python3 \
     python3-pip \
-    python3-dev \
     bash \
-    git \
     && rm -rf /var/lib/apt/lists/*
 
 # 创建工作目录
