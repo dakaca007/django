@@ -11,18 +11,18 @@
             box-sizing: border-box;
             font-family: 'PingFang SC', 'Helvetica Neue', Arial, sans-serif;
         }
-        
+
         body {
             background: #f5f5f5;
             color: #333;
             padding-bottom: 70px; /* 底部播放栏高度 */
         }
-        
+
         .container {
             max-width: 100%;
             padding: 10px;
         }
-        
+
         .search-box {
             position: sticky;
             top: 0;
@@ -31,7 +31,7 @@
             z-index: 10;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
-        
+
         .search-box input {
             width: 100%;
             padding: 8px 15px;
@@ -39,11 +39,11 @@
             border-radius: 20px;
             font-size: 14px;
         }
-        
+
         .song-list {
             margin-top: 5px;
         }
-        
+
         .song-item {
             display: flex;
             padding: 12px 15px;
@@ -51,29 +51,29 @@
             border-bottom: 1px solid #eee;
             align-items: center;
         }
-        
+
         .song-item.active {
             background: #e6f2ff;
         }
-        
+
         .song-info {
             flex: 1;
             overflow: hidden;
         }
-        
+
         .song-title {
             font-size: 16px;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
-        
+
         .song-artist {
             font-size: 12px;
             color: #666;
             margin-top: 3px;
         }
-        
+
         .play-btn {
             width: 30px;
             height: 30px;
@@ -86,8 +86,7 @@
             border: none;
             margin-left: 10px;
         }
-        
-        /* 底部播放栏 */
+
         .mini-player {
             position: fixed;
             bottom: 0;
@@ -100,30 +99,30 @@
             align-items: center;
             z-index: 100;
         }
-        
+
         .mini-info {
             flex: 1;
             overflow: hidden;
         }
-        
+
         .mini-title {
             font-size: 14px;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
-        
+
         .mini-artist {
             font-size: 12px;
             color: #666;
         }
-        
+
         .mini-controls {
             display: flex;
             align-items: center;
             margin-left: 10px;
         }
-        
+
         .mini-btn {
             background: none;
             border: none;
@@ -131,11 +130,11 @@
             color: #4a90e2;
             margin: 0 5px;
         }
-        
-        /* 可折叠歌词面板 */
+
+        /* 歌词面板 */
         .lyrics-panel {
             position: fixed;
-            bottom: 70px; /* 在播放栏上方 */
+            bottom: 70px;
             left: 0;
             right: 0;
             max-height: 0;
@@ -143,32 +142,34 @@
             background: rgba(255,255,255,0.95);
             transition: max-height 0.3s ease;
             box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            z-index: 100;
         }
-        
+
         .lyrics-panel.show {
-            max-height: 50vh; /* 显示时的高度 */
+            max-height: 50vh;
         }
-        
+
         .lyrics-content {
             padding: 15px;
             text-align: center;
         }
-        
+
         .lyric-line {
             margin: 12px 0;
             color: #666;
             transition: all 0.3s;
         }
-        
+
         .lyric-line.active {
             color: #4a90e2;
             font-weight: bold;
             font-size: 18px;
         }
-        
+
+        /* 独立存在的歌词切换按钮 */
         .toggle-lyrics {
-            position: absolute;
-            top: -25px;
+            position: fixed;
+            bottom: 70px;
             left: 50%;
             transform: translateX(-50%);
             width: 50px;
@@ -177,8 +178,11 @@
             border: none;
             border-radius: 15px 15px 0 0;
             box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
+            z-index: 101;
+            cursor: pointer;
+            font-size: 14px;
         }
-        
+
         .loading {
             text-align: center;
             padding: 20px;
@@ -196,15 +200,17 @@
             <div class="loading">加载中...</div>
         </div>
     </div>
-    
+
     <!-- 可折叠歌词面板 -->
     <div class="lyrics-panel" id="lyrics-panel">
-        <button class="toggle-lyrics" id="toggle-lyrics">↑↓</button>
         <div class="lyrics-content" id="lyrics-content">
             <div class="lyric-line">点击播放歌曲后显示歌词</div>
         </div>
     </div>
-    
+
+    <!-- 独立存在的歌词切换按钮 -->
+    <button class="toggle-lyrics" id="toggle-lyrics">↑</button>
+
     <!-- 底部播放控制栏 -->
     <div class="mini-player" id="mini-player" style="display: none;">
         <div class="mini-info">
@@ -219,7 +225,7 @@
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             // 核心元素
             const songListEl = document.getElementById('song-list');
             const searchInput = document.getElementById('search-input');
@@ -232,7 +238,7 @@
             const lyricsPanel = document.getElementById('lyrics-panel');
             const lyricsContent = document.getElementById('lyrics-content');
             const toggleLyricsBtn = document.getElementById('toggle-lyrics');
-            
+
             // 音频控制
             const audio = new Audio();
             let currentSong = null;
@@ -241,10 +247,10 @@
             let lyrics = [];
             let currentLyricIndex = -1;
             let lyricsVisible = false;
-            
+
             // 初始化加载
             loadSongs();
-            
+
             // 事件监听
             searchInput.addEventListener('input', debounce(handleSearch, 300));
             miniPlayBtn.addEventListener('click', togglePlay);
@@ -255,7 +261,7 @@
             audio.addEventListener('pause', updatePlayState);
             audio.addEventListener('ended', playNext);
             audio.addEventListener('timeupdate', updateLyrics);
-            
+
             // 加载歌曲列表
             function loadSongs() {
                 fetch('/songs')
@@ -269,14 +275,14 @@
                         songListEl.innerHTML = '<div class="loading">加载失败，请刷新重试</div>';
                     });
             }
-            
+
             // 渲染歌曲列表
             function renderSongList() {
                 if (filteredSongs.length === 0) {
                     songListEl.innerHTML = '<div class="loading">没有找到歌曲</div>';
                     return;
                 }
-                
+
                 songListEl.innerHTML = filteredSongs.map(song => `
                     <div class="song-item ${currentSong?.song_id === song.song_id ? 'active' : ''}" 
                          data-id="${song.song_id}">
@@ -287,18 +293,16 @@
                         <button class="play-btn" data-id="${song.song_id}">▶</button>
                     </div>
                 `).join('');
-                
-                // 绑定播放事件
+
                 document.querySelectorAll('.play-btn').forEach(btn => {
-                    btn.addEventListener('click', function() {
+                    btn.addEventListener('click', function () {
                         const songId = parseInt(this.dataset.id);
                         playSong(songId);
                     });
                 });
-                
-                // 点击整行也可播放
+
                 document.querySelectorAll('.song-item').forEach(item => {
-                    item.addEventListener('click', function(e) {
+                    item.addEventListener('click', function (e) {
                         if (!e.target.classList.contains('play-btn')) {
                             const songId = parseInt(this.dataset.id);
                             playSong(songId);
@@ -306,47 +310,44 @@
                     });
                 });
             }
-            
+
             // 搜索功能
             function handleSearch() {
                 const query = searchInput.value.trim().toLowerCase();
-                filteredSongs = query ? 
-                    songs.filter(s => 
-                        s.title.toLowerCase().includes(query) || 
+                filteredSongs = query ?
+                    songs.filter(s =>
+                        s.title.toLowerCase().includes(query) ||
                         s.artist.toLowerCase().includes(query)
                     ) : [...songs];
                 renderSongList();
             }
-            
+
             // 播放歌曲
             function playSong(songId) {
                 const song = songs.find(s => s.song_id === songId);
                 if (!song) return;
-                
+
                 currentSong = song;
                 miniTitle.textContent = song.title;
                 miniArtist.textContent = song.artist;
                 miniPlayer.style.display = 'flex';
-                
-                // 更新列表中的活动状态
+
                 document.querySelectorAll('.song-item').forEach(item => {
                     item.classList.toggle('active', parseInt(item.dataset.id) === songId);
                 });
-                
-                // 播放音频
+
                 audio.src = `/play/${songId}`;
                 audio.play().catch(e => console.error('播放失败:', e));
-                
-                // 加载歌词
+
                 loadLyrics(songId);
             }
-            
+
             // 加载歌词
             function loadLyrics(songId) {
                 lyricsContent.innerHTML = '<div class="lyric-line">歌词加载中...</div>';
                 lyrics = [];
                 currentLyricIndex = -1;
-                
+
                 fetch(`/lyric/${songId}`)
                     .then(response => response.text())
                     .then(text => {
@@ -361,13 +362,13 @@
                         lyricsContent.innerHTML = '<div class="lyric-line">歌词加载失败</div>';
                     });
             }
-            
+
             // 解析歌词
             function parseLyrics(text) {
                 const lines = text.split('\n');
                 const lyricArray = [];
                 const timeRegex = /\[(\d+):(\d+)\.(\d+)\]/;
-                
+
                 lines.forEach(line => {
                     const match = timeRegex.exec(line);
                     if (match) {
@@ -376,35 +377,34 @@
                         const milliseconds = parseInt(match[3]);
                         const time = minutes * 60 + seconds + milliseconds / 100;
                         const text = line.replace(timeRegex, '').trim();
-                        
                         if (text) lyricArray.push({ time, text });
                     } else if (line.trim()) {
                         lyricArray.push({ time: -1, text: line.trim() });
                     }
                 });
-                
+
                 return lyricArray;
             }
-            
+
             // 渲染歌词
             function renderLyrics() {
                 if (lyrics.length === 0) {
                     lyricsContent.innerHTML = '<div class="lyric-line">暂无歌词</div>';
                     return;
                 }
-                
-                lyricsContent.innerHTML = lyrics.map(lyric => 
+
+                lyricsContent.innerHTML = lyrics.map(lyric =>
                     `<div class="lyric-line" data-time="${lyric.time}">${lyric.text}</div>`
                 ).join('');
             }
-            
+
             // 更新歌词高亮
             function updateLyrics() {
                 if (lyrics.length === 0) return;
-                
+
                 const currentTime = audio.currentTime;
                 let newIndex = -1;
-                
+
                 for (let i = 0; i < lyrics.length; i++) {
                     if (lyrics[i].time <= currentTime) {
                         newIndex = i;
@@ -412,18 +412,17 @@
                         break;
                     }
                 }
-                
+
                 if (newIndex === currentLyricIndex) return;
-                
+
                 const lyricLines = document.querySelectorAll('.lyric-line');
                 if (currentLyricIndex >= 0) {
                     lyricLines[currentLyricIndex].classList.remove('active');
                 }
-                
+
                 if (newIndex >= 0) {
                     lyricLines[newIndex].classList.add('active');
-                    
-                    // 自动滚动到当前歌词（仅在展开时）
+
                     if (lyricsVisible) {
                         lyricLines[newIndex].scrollIntoView({
                             behavior: 'smooth',
@@ -431,17 +430,16 @@
                         });
                     }
                 }
-                
+
                 currentLyricIndex = newIndex;
             }
-            
+
             // 切换歌词面板
             function toggleLyrics() {
                 lyricsVisible = !lyricsVisible;
                 lyricsPanel.classList.toggle('show', lyricsVisible);
                 toggleLyricsBtn.textContent = lyricsVisible ? '↓' : '↑';
-                
-                // 如果展开且有当前歌词，滚动到位置
+
                 if (lyricsVisible && currentLyricIndex >= 0) {
                     const activeLine = document.querySelector('.lyric-line.active');
                     if (activeLine) {
@@ -449,7 +447,7 @@
                     }
                 }
             }
-            
+
             // 播放/暂停切换
             function togglePlay() {
                 if (audio.paused) {
@@ -462,34 +460,34 @@
                     audio.pause();
                 }
             }
-            
+
             // 更新播放状态
             function updatePlayState() {
                 miniPlayBtn.textContent = audio.paused ? '▶' : '⏸';
             }
-            
+
             // 上一首
             function playPrevious() {
                 if (!currentSong) return;
-                
+
                 const currentIndex = filteredSongs.findIndex(s => s.song_id === currentSong.song_id);
                 const prevIndex = (currentIndex - 1 + filteredSongs.length) % filteredSongs.length;
                 playSong(filteredSongs[prevIndex].song_id);
             }
-            
+
             // 下一首
             function playNext() {
                 if (!currentSong) return;
-                
+
                 const currentIndex = filteredSongs.findIndex(s => s.song_id === currentSong.song_id);
                 const nextIndex = (currentIndex + 1) % filteredSongs.length;
                 playSong(filteredSongs[nextIndex].song_id);
             }
-            
+
             // 防抖函数
             function debounce(func, wait) {
                 let timeout;
-                return function() {
+                return function () {
                     clearTimeout(timeout);
                     timeout = setTimeout(() => func.apply(this, arguments), wait);
                 };
