@@ -117,11 +117,12 @@
             const song = songs[currentSongIndex];
             
             nowPlaying.textContent = `${song.title} - ${song.artist}`;
-            audio.src = song.url;
+            audio.src = `/play/${song.song_id}`;
+
             playerDiv.style.display = 'block';
             
             // 加载歌词
-            fetch(`/lyric/${song.id}`)
+           fetch(`/lyric/${song.song_id}`)
                 .then(res => res.text())
                 .then(text => {
                     lyrics = parseLyrics(text);

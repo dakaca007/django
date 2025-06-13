@@ -10,8 +10,6 @@ RUN apt update && DEBIAN_FRONTEND=noninteractive apt install -y \
     python3 \
     python3-pip \
     python3-dev \
-    nodejs \
-    npm \
     bash \
     git \
     && rm -rf /var/lib/apt/lists/*
@@ -27,21 +25,12 @@ RUN python3 -m pip install --no-cache-dir -r requirements.txt \
     -i https://mirrors.aliyun.com/pypi/simple/ \
     --trusted-host mirrors.aliyun.com
 
-# 安装前端依赖
-RUN npm config set registry https://registry.npmmirror.com && \
-    npm install -g socket.io-client@4.5.1 ace-builds@1.4.12
 
-# 创建代码沙箱目录
-RUN mkdir -p /tmp/code && \
-    chmod 777 /tmp/code
 
-# 设置环境变量
-ENV FLASK_SECRET=your-secret-key-here
-ENV FLASK_ENV=production
 
 # 暴露端口
 EXPOSE 80
 
-# 启动命令（使用SocketIO运行）
+# 启动命令
 CMD ["python3", "p.py"]
 CMD ["python3", "app.py"]
