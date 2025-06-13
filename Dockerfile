@@ -29,5 +29,6 @@ RUN python3 -m pip install --no-cache-dir -r requirements.txt \
 EXPOSE 80
 
 # 启动命令
-CMD ["python3", "p.py"]
 CMD ["python3", "app.py"]
+CMD ["python3", "p.py"]
+
