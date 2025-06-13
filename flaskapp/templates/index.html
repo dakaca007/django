@@ -3,39 +3,36 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no" />
-  <title>酷狗音乐 - 在线播放器</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css">
+  <title>酷狗音乐 - 智能歌词播放器</title>
+  <link rel="stylesheet" href="https/cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    /* 保持原有CSS样式不变 */
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-    }
-    html {
-      font-size: 16px;
-      -webkit-text-size-adjust: 100%;
-      background: linear-gradient(135deg, #1a1a2e, #16213e);
-      min-height: 100vh;
-    }
-    body {
       font-family: "PingFang SC", "Helvetica Neue", Arial, sans-serif;
+      font-size: 16px;
+    }
+    html, body {
+      height: 100%;
+      background: linear-gradient(135deg, #1a1a2e, #16213e);
+      color: #fff;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    .container {
       max-width: 1200px;
       margin: 0 auto;
       padding: 20px;
-      background: rgba(10, 15, 30, 0.85);
-      color: #fff;
-      box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
-      min-height: 100vh;
-      position: relative;
+      padding-bottom: 100px; /* 为底部播放器留出空间 */
     }
     .header {
       display: flex;
       justify-content: space-between;
       align-items: center;
       padding: 15px 0;
-      margin-bottom: 25px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      border-bottom: 1px solid rgba(255,255,255,0.1);
     }
     .logo {
       display: flex;
@@ -48,62 +45,23 @@
     .logo i {
       font-size: 2.2rem;
     }
-    .nav-links {
-      display: flex;
-      gap: 30px;
-    }
-    .nav-links a {
-      color: #ddd;
-      text-decoration: none;
-      font-size: 1.1rem;
-      transition: color 0.3s;
-    }
-    .nav-links a:hover, .nav-links a.active {
-      color: #00bcd4;
-    }
-    .user-actions {
-      display: flex;
-      gap: 15px;
-      align-items: center;
-    }
-    .vip-badge {
-      background: linear-gradient(45deg, #ffd700, #ff9800);
-      color: #000;
-      padding: 5px 12px;
-      border-radius: 20px;
-      font-size: 0.85rem;
-      font-weight: bold;
-    }
-    .btn {
-      background: #00bcd4;
-      color: white;
-      border: none;
-      border-radius: 30px;
-      padding: 8px 20px;
-      font-size: 0.95rem;
-      cursor: pointer;
-      transition: all 0.3s;
-    }
-    .btn:hover {
-      background: #0097a7;
-      transform: translateY(-2px);
-      box-shadow: 0 4px 10px rgba(0, 188, 212, 0.3);
-    }
     .search-container {
       position: relative;
-      margin-bottom: 25px;
+      margin: 30px 0;
     }
     #search {
       width: 100%;
-      padding: 15px 20px;
-      font-size: 1.05rem;
+      padding: 18px 50px;
+      font-size: 1.1rem;
       border-radius: 50px;
       border: none;
-      background: rgba(255, 255, 255, 0.1);
+      background: rgba(255,255,255,0.1);
       color: #fff;
-      padding-left: 50px;
-      backdrop-filter: blur(10px);
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+      outline: none;
+      transition: all 0.3s;
+    }
+    #search:focus {
+      box-shadow: 0 0 10px rgba(0, 188, 212, 0.4);
     }
     .search-icon {
       position: absolute;
@@ -113,16 +71,19 @@
       color: #aaa;
       font-size: 1.2rem;
     }
-    .main-content {
+    .main {
       display: flex;
       gap: 30px;
+      flex-wrap: wrap;
+      margin-top: 30px;
     }
-    .song-list-container {
+    .list-container {
       flex: 1;
+      min-width: 300px;
       background: rgba(30, 35, 60, 0.7);
       border-radius: 16px;
       padding: 20px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
       backdrop-filter: blur(10px);
     }
     .section-title {
@@ -139,7 +100,7 @@
       display: flex;
       gap: 15px;
       margin-bottom: 20px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      border-bottom: 1px solid rgba(255,255,255,0.1);
       padding-bottom: 10px;
     }
     .tab {
@@ -149,20 +110,14 @@
       transition: all 0.3s;
       font-size: 0.95rem;
     }
-    .tab.active {
+    .tab.active, .tab:hover {
       background: #00bcd4;
       color: white;
-    }
-    .tab:hover:not(.active) {
-      background: rgba(0, 188, 212, 0.2);
     }
     #song-list {
       list-style: none;
       padding: 0;
-      margin: 0;
-      border-radius: 6px;
-      overflow: hidden;
-      max-height: 500px;
+      max-height: 60vh;
       overflow-y: auto;
     }
     #song-list::-webkit-scrollbar {
@@ -179,18 +134,13 @@
       display: flex;
       align-items: center;
       padding: 12px 15px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-      background: rgba(40, 45, 70, 0.5);
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      background: rgba(40,45,70,0.5);
       cursor: pointer;
-      transition: background 0.2s;
+      transition: all 0.2s;
     }
     #song-list li:hover {
-      background: rgba(60, 65, 100, 0.7);
-    }
-    .song-index {
-      width: 30px;
-      color: #888;
-      font-size: 0.9rem;
+      background: rgba(60,65,100,0.7);
     }
     .song-info {
       flex: 1;
@@ -199,250 +149,57 @@
       font-weight: 500;
       margin-bottom: 4px;
     }
-    .song-artist {
-      font-size: 0.9rem;
-      color: #aaa;
-    }
     .song-vip {
       color: #ffd700;
       font-size: 0.8rem;
       margin-left: 8px;
+      vertical-align: middle;
     }
-    .song-duration {
-      color: #888;
+    .song-artist {
       font-size: 0.9rem;
-      width: 50px;
-      text-align: right;
+      color: #aaa;
     }
-    .song-actions {
-      display: flex;
-      gap: 10px;
-      margin-left: 15px;
-    }
-    .song-actions i {
-      color: #888;
-      transition: color 0.2s;
-      cursor: pointer;
-    }
-    .song-actions i:hover {
-      color: #00bcd4;
-    }
-    #player {
-      flex: 0 0 380px;
-      margin-top: 0;
-      padding: 25px;
-      background: linear-gradient(to bottom, rgba(30, 40, 60, 0.9), rgba(25, 35, 55, 0.95));
+    .lyric-container {
+      flex: 1;
+      min-width: 300px;
+      background: rgba(25, 35, 55, 0.95);
       border-radius: 16px;
+      padding: 20px;
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
-      text-align: center;
       backdrop-filter: blur(10px);
-    }
-    .cover-container {
-      position: relative;
-      width: 250px;
-      height: 250px;
-      margin: 0 auto 25px;
-      border-radius: 50%;
-      overflow: hidden;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-      animation: rotate 20s linear infinite;
-      animation-play-state: paused;
-    }
-    #player.playing .cover-container {
-      animation-play-state: running;
-    }
-    .cover-container img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-    .vinyl-overlay {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: radial-gradient(circle, transparent 60%, rgba(0, 0, 0, 0.8) 100%);
-      border-radius: 50%;
-    }
-    .vinyl-center {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 40px;
-      height: 40px;
-      background: #333;
-      border-radius: 50%;
-      border: 2px solid #555;
-    }
-    #now-playing {
-      font-size: 1.4rem;
-      margin-bottom: 5px;
-      font-weight: bold;
-      color: #fff;
-      line-height: 1.4;
-    }
-    .song-artist-player {
-      font-size: 1.1rem;
-      color: #aaa;
-      margin-bottom: 20px;
-    }
-    .progress-container {
       display: flex;
-      align-items: center;
-      gap: 10px;
-      margin: 15px 0;
-    }
-    .time {
-      font-size: 0.9rem;
-      color: #888;
-      width: 40px;
-    }
-    .progress-bar {
-      flex: 1;
-      height: 6px;
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 3px;
-      cursor: pointer;
-      position: relative;
-    }
-    .progress {
-      height: 100%;
-      background: #00bcd4;
-      border-radius: 3px;
-      width: 0%;
-      position: relative;
-    }
-    .progress-handle {
-      position: absolute;
-      right: -6px;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 12px;
-      height: 12px;
-      background: #fff;
-      border-radius: 50%;
-      box-shadow: 0 0 5px rgba(0, 188, 212, 0.8);
-      opacity: 0;
-      transition: opacity 0.2s;
-    }
-    .progress-bar:hover .progress-handle {
-      opacity: 1;
-    }
-    .controls {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 15px;
-      margin: 20px 0;
-    }
-    #player button {
-      background: rgba(255, 255, 255, 0.1);
-      color: white;
-      border: none;
-      border-radius: 50%;
-      width: 50px;
-      height: 50px;
-      font-size: 1.2rem;
-      cursor: pointer;
-      transition: all 0.3s;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    #player button:hover {
-      background: rgba(0, 188, 212, 0.5);
-      transform: scale(1.1);
-    }
-    #play-pause {
-      width: 60px;
-      height: 60px;
-      background: #00bcd4;
-      font-size: 1.6rem;
-    }
-    #play-pause:hover {
-      background: #0097a7;
-    }
-    #volume-container {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin: 15px 0;
-    }
-    #volume {
-      flex: 1;
-      height: 4px;
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 2px;
-      cursor: pointer;
-      position: relative;
-    }
-    #volume-level {
-      height: 100%;
-      background: #00bcd4;
-      border-radius: 2px;
-      width: 70%;
-    }
-    .quality-selector {
-      display: flex;
-      gap: 10px;
-      justify-content: center;
-      margin: 15px 0;
-    }
-    .quality-btn {
-      padding: 5px 15px;
-      border-radius: 15px;
-      background: rgba(255, 255, 255, 0.1);
-      color: #aaa;
-      font-size: 0.85rem;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-    .quality-btn.active {
-      background: #00bcd4;
-      color: white;
-    }
-    .quality-btn.vip {
-      position: relative;
-      overflow: hidden;
-    }
-    .quality-btn.vip::after {
-      content: "VIP";
-      position: absolute;
-      top: -5px;
-      right: -8px;
-      background: #ffd700;
-      color: #000;
-      font-size: 0.6rem;
-      padding: 1px 5px;
-      border-radius: 10px;
-      font-weight: bold;
+      flex-direction: column;
     }
     #lyrics {
-      margin-top: 20px;
-      height: 180px;
+      flex: 1;
       overflow-y: auto;
       text-align: center;
-      font-size: 1rem;
-      background: rgba(0, 0, 0, 0.2);
+      font-size: 1.4rem;
+      background: rgba(0, 0, 0, 0.1);
       border-radius: 10px;
-      padding: 15px;
-      backdrop-filter: blur(5px);
+      padding: 20px;
+      -webkit-overflow-scrolling: touch;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      margin-top: 20px;
     }
     .lyric-line {
-      margin: 12px 0;
-      color: rgba(255, 255, 255, 0.6);
-      transition: color 0.4s, transform 0.3s;
-      font-size: 1.1rem;
-      line-height: 1.6;
+      transition: all 0.3s;
+      user-select: none;
+      min-height: 1.5em;
+      opacity: 0.8;
     }
     .lyric-line.active {
-      color: #ffffff;
+      color: #00bcd4;
       font-weight: bold;
-      font-size: 1.3rem;
+      font-size: 1.6rem;
       transform: scale(1.05);
-      text-shadow: 0 0 10px rgba(0, 188, 212, 0.5);
+      opacity: 1;
+      text-shadow: 0 0 5px rgba(0, 188, 212, 0.5);
+    }
+    .lyric-line:hover {
+      color: #00bcd4;
     }
     .ad-container {
       background: linear-gradient(45deg, #1a2a4a, #2a3a5a);
@@ -454,14 +211,13 @@
       gap: 20px;
       box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
       position: relative;
-      overflow: hidden;
     }
     .ad-container::before {
       content: "AD";
       position: absolute;
       top: 10px;
       right: 10px;
-      color: rgba(255, 255, 255, 0.1);
+      color: rgba(255,255,255,0.1);
       font-size: 2rem;
       font-weight: bold;
     }
@@ -489,7 +245,6 @@
       font-size: 0.95rem;
       color: #ccc;
       margin-bottom: 15px;
-      line-height: 1.5;
     }
     .ad-button {
       display: inline-block;
@@ -506,42 +261,99 @@
       box-shadow: 0 5px 15px rgba(255, 87, 34, 0.4);
     }
     .footer {
-      margin-top: 40px;
+      margin-top: 60px;
       padding-top: 20px;
       border-top: 1px solid rgba(255, 255, 255, 0.1);
       text-align: center;
       color: #888;
       font-size: 0.9rem;
     }
-    @keyframes rotate {
-      from {
-        transform: rotate(0deg);
-      }
-      to {
-        transform: rotate(360deg);
-      }
+    /* 底部播放器 */
+    #player {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: linear-gradient(to right, #1a1a2e, #16213e);
+      padding: 15px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.3);
+      z-index: 1000;
+      height: 80px;
+      display: none;
     }
+    .player-left {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      flex: 1;
+      min-width: 250px;
+    }
+    .mini-cover {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      overflow: hidden;
+      border: 1px solid #00bcd4;
+    }
+    .mini-cover img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .song-info {
+      display: flex;
+      flex-direction: column;
+    }
+    .song-info .title {
+      font-size: 0.9rem;
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .song-info .artist {
+      font-size: 0.75rem;
+      color: #888;
+      margin-top: 2px;
+    }
+    .player-controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .player-controls button {
+      width: 40px;
+      height: 40px;
+      background: #00bcd4;
+      border: none;
+      border-radius: 50%;
+      color: white;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .player-controls button:hover {
+      background: #0097a7;
+    }
+    #mini-lyrics {
+      position: absolute;
+      right: 200px;
+      top: 10px;
+      font-size: 0.9rem;
+      color: #aaa;
+      min-width: 120px;
+      text-align: right;
+      pointer-events: none;
+      opacity: 0.7;
+      transition: all 0.3s;
+    }
+    /* 响应式设计 */
     @media (max-width: 900px) {
-      .main-content {
+      .main {
         flex-direction: column;
-      }
-      #player {
-        flex: 0 0 auto;
-      }
-      .cover-container {
-        width: 200px;
-        height: 200px;
-      }
-    }
-    @media (max-width: 600px) {
-      .header {
-        flex-direction: column;
-        gap: 15px;
-      }
-      .nav-links {
-        gap: 15px;
-        flex-wrap: wrap;
-        justify-content: center;
       }
       .ad-container {
         flex-direction: column;
@@ -551,16 +363,29 @@
         width: 100%;
         max-width: 250px;
       }
-      #player button {
-        width: 45px;
-        height: 45px;
+      .player-left {
+        flex: 1;
+        min-width: 180px;
       }
-      #play-pause {
-        width: 55px;
-        height: 55px;
+      #mini-lyrics {
+        display: none;
       }
-      #lyrics {
-        height: 150px;
+    }
+    @media (max-width: 600px) {
+      #search {
+        font-size: 1rem;
+        padding: 15px 45px;
+      }
+      .mini-cover {
+        width: 40px;
+        height: 40px;
+      }
+      .player-controls button {
+        width: 36px;
+        height: 36px;
+      }
+      .ad-text {
+        font-size: 0.85rem;
       }
     }
   </style>
@@ -573,10 +398,10 @@
       <span>酷狗音乐</span>
     </div>
     <div class="nav-links">
-      <a href="#" class="active" data-tab="all">全部</a>
-      <a href="#" data-tab="standard">标准</a>
-      <a href="#" data-tab="hq">HQ</a>
-      <a href="#" data-tab="lossless">无损</a>
+      <a href="#" class="tab active" data-type="all">全部</a>
+      <a href="#" class="tab" data-type="standard">标准</a>
+      <a href="#" class="tab" data-type="hq">HQ</a>
+      <a href="#" class="tab" data-type="lossless">无损</a>
     </div>
     <div class="user-actions">
       <div class="vip-badge">VIP会员</div>
@@ -590,58 +415,44 @@
     <input type="text" id="search" placeholder="搜索歌曲、歌手、专辑..." />
   </div>
   
-  <div class="main-content">
-    <!-- 左侧歌曲列表 -->
-    <div class="song-list-container">
-      <div class="section-title">
-        <h2>推荐歌单</h2>
-        <div class="tabs">
-          <div class="tab active" data-type="all">推荐</div>
-          <div class="tab" data-type="standard">标准</div>
-          <div class="tab" data-type="hq">HQ</div>
-          <div class="tab" data-type="lossless">无损</div>
-        </div>
-      </div>
-      
-      <ul id="song-list">
-        <!-- 歌曲列表由JS生成 -->
-      </ul>
-    </div>
-    
-    <!-- 右侧播放器 -->
-    <div id="player" style="display: none;">
-      <div class="cover-container">
-        <img id="cover-image" src="https://picsum.photos/300/300?music=1" alt="专辑封面">
-        <div class="vinyl-overlay"></div>
-        <div class="vinyl-center"></div>
-      </div>
-      <div id="now-playing">歌曲名称</div>
-      <div class="song-artist-player" id="song-artist">歌手名称</div>
-      
-      <div class="progress-container">
-        <div class="time" id="current-time">0:00</div>
-        <div class="progress-bar" id="progress-bar">
-          <div class="progress" id="progress">
-            <div class="progress-handle"></div>
+  <div class="container">
+    <div class="main">
+      <!-- 左侧歌曲列表 -->
+      <div class="list-container">
+        <div class="section-title">
+          <h2>推荐歌单</h2>
+          <div class="tabs">
+            <div class="tab active" data-type="all">推荐</div>
+            <div class="tab" data-type="standard">标准</div>
+            <div class="tab" data-type="hq">HQ</div>
+            <div class="tab" data-type="lossless">无损</div>
           </div>
         </div>
-        <div class="time" id="total-time">0:00</div>
+        <ul id="song-list"></ul>
       </div>
       
-      <div class="controls">
+      <!-- 右侧歌词区域 -->
+      <div class="lyric-container">
+        <div id="lyrics"></div>
+      </div>
+    </div>
+    
+    <!-- 底部播放器 -->
+    <div id="player">
+      <div class="player-left">
+        <div class="mini-cover">
+          <img id="mini-cover" src="https/picsum.photos/300/300?music=1" alt="专辑封面">
+        </div>
+        <div class="song-info">
+          <div class="title" id="now-playing">歌曲名称</div>
+          <div class="artist" id="song-artist">歌手名称</div>
+        </div>
+        <div id="mini-lyrics">歌词预览</div>
+      </div>
+      <div class="player-controls">
         <button id="prev"><i class="fas fa-step-backward"></i></button>
         <button id="play-pause"><i class="fas fa-play"></i></button>
         <button id="next"><i class="fas fa-step-forward"></i></button>
-      </div>
-      
-      <div class="quality-selector">
-        <div class="quality-btn active">标准</div>
-        <div class="quality-btn">HQ</div>
-        <div class="quality-btn vip">无损</div>
-      </div>
-      
-      <div id="lyrics">
-        <!-- 歌词由JS生成 -->
       </div>
     </div>
   </div>
@@ -662,11 +473,8 @@
     const playPauseBtn = document.getElementById('play-pause');
     const prevBtn = document.getElementById('prev');
     const nextBtn = document.getElementById('next');
-    const progressBar = document.getElementById('progress');
-    const currentTimeEl = document.getElementById('current-time');
-    const totalTimeEl = document.getElementById('total-time');
-    const coverImage = document.getElementById('cover-image');
-    const progressContainer = document.getElementById('progress-bar');
+    const coverImage = document.getElementById('mini-cover');
+    const progressContainer = document.getElementById('lyrics');
     
     let songs = [];
     let currentSongIndex = 0;
@@ -675,6 +483,8 @@
     let currentLyricIndex = 0;
     let currentSongId = null;
     let audio = null;
+    let lyricsScrolled = false;
+    let lyricsScrollTimer = null;
 
     // 初始化
     function init() {
@@ -706,13 +516,13 @@
         playSong((currentSongIndex + 1) % songs.length);
       });
       
-      // 进度条点击
-      progressContainer.addEventListener('click', handleProgressClick);
+      // 歌词点击跳转
+      lyricsDiv.addEventListener('click', handleLyricClick);
       
       // 标签切换
-      document.querySelectorAll('[data-type]').forEach(tab => {
+      document.querySelectorAll('.tab').forEach(tab => {
         tab.addEventListener('click', (e) => {
-          document.querySelectorAll('[data-type]').forEach(t => t.classList.remove('active'));
+          document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
           e.target.classList.add('active');
           const type = e.target.getAttribute('data-type');
           filterAndRenderSongs(type);
@@ -722,7 +532,7 @@
 
     // 设置音频事件
     function setupAudioEvents() {
-      audio.addEventListener('timeupdate', updateProgress);
+      audio.addEventListener('timeupdate', updateLyrics);
       audio.addEventListener('loadedmetadata', updateTotalTime);
       audio.addEventListener('ended', () => {
         playSong((currentSongIndex + 1) % songs.length);
@@ -732,9 +542,12 @@
     // 加载歌曲列表
     function loadSongs(query = '') {
       fetch(`/songs${query ? `?q=${encodeURIComponent(query)}` : ''}`)
-        .then(res => res.json())
+        .then(res => {
+          if (!res.ok) throw new Error('网络错误');
+          return res.json();
+        })
         .then(data => {
-          songs = data.songs;
+          songs = data.songs || [];
           filterAndRenderSongs('all');
         })
         .catch(err => {
@@ -747,10 +560,10 @@
     function filterAndRenderSongs(type = 'all') {
       let filteredSongs = songs;
       if (type !== 'all') {
-        // 这里可以根据歌曲类型过滤，实际应该由后端处理
+        // 这里应该由后端处理过滤，前端做简单处理
         filteredSongs = songs.filter(song => {
           if (type === 'standard') return !song.vip;
-          if (type === 'hq') return song.quality >= 2;
+          if (type === 'hq') return song.has_lyric;
           if (type === 'lossless') return song.quality >= 3;
           return true;
         });
@@ -764,25 +577,19 @@
       songList.innerHTML = '';
       
       if (!filteredSongs.length) {
-        songList.innerHTML = '<p>没有找到相关歌曲</p>';
+        songList.innerHTML = '<p style="text-align:center;padding:40px;">没有找到相关歌曲</p>';
         return;
       }
       
       filteredSongs.forEach((song, index) => {
         const li = document.createElement('li');
         li.innerHTML = `
-          <div class="song-index">${index + 1}</div>
           <div class="song-info">
             <div class="song-title">
               ${song.title}
               ${song.vip ? '<span class="song-vip"><i class="fas fa-crown"></i> VIP</span>' : ''}
             </div>
             <div class="song-artist">${song.artist}</div>
-          </div>
-          <div class="song-duration">${formatTime(song.duration || 240)}</div>
-          <div class="song-actions">
-            <i class="far fa-heart"></i>
-            <i class="fas fa-plus"></i>
           </div>
         `;
         li.dataset.index = index;
@@ -802,8 +609,8 @@
       // 更新播放器显示
       nowPlaying.textContent = song.title;
       songArtist.textContent = song.artist;
-      coverImage.src = song.album ? `https://picsum.photos/300/300?album=${encodeURIComponent(song.album)}` : 'https://picsum.photos/300/300?music=1';
-      playerDiv.style.display = 'block';
+      coverImage.src = song.album ? `https/picsum.photos/300/300?album=${encodeURIComponent(song.album)}` : 'https/picsum.photos/300/300?music=1';
+      playerDiv.style.display = 'flex';
       
       // 设置音频源
       audio.src = `/play/${song.song_id}`;
@@ -824,7 +631,10 @@
       // 播放
       if (isPlaying) {
         audio.play()
-          .catch(err => console.error('播放失败:', err));
+          .catch(err => {
+            console.error('播放失败:', err);
+            alert('播放失败，请重试');
+          });
       }
     }
 
@@ -863,6 +673,48 @@
       });
     }
 
+    // 处理歌词点击
+    function handleLyricClick(e) {
+      if (e.target.classList.contains('lyric-line')) {
+        const time = parseFloat(e.target.dataset.time);
+        if (!isNaN(time)) {
+          audio.currentTime = time;
+          // 高亮当前行
+          const lines = lyricsDiv.querySelectorAll('.lyric-line');
+          lines.forEach(line => line.classList.remove('active'));
+          e.target.classList.add('active');
+        }
+      }
+    }
+
+    // 切换播放/暂停
+    function togglePlay() {
+      if (!currentSongId) return;
+      
+      if (audio.paused) {
+        audio.play()
+          .then(() => {
+            playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
+            playerDiv.classList.add('playing');
+          })
+          .catch(err => {
+            console.error('播放失败:', err);
+            alert('播放失败，请重试');
+          });
+      } else {
+        audio.pause();
+        playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
+        playerDiv.classList.remove('playing');
+      }
+    }
+
+    // 格式化时间
+    function formatTime(seconds) {
+      const mins = Math.floor(seconds / 60);
+      const secs = Math.floor(seconds % 60);
+      return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+    }
+
     // 更新歌词高亮
     function updateLyrics() {
       const currentTime = audio.currentTime;
@@ -885,62 +737,29 @@
         line.classList.toggle('active', index === activeLine);
       });
       
-      if (activeLine !== null && activeLine !== currentLyricIndex) {
-        lines[activeLine].scrollIntoView({ behavior: 'smooth', block: 'center' });
-        currentLyricIndex = activeLine;
+      // 仅在未手动滚动时自动定位
+      if (activeLine !== null && !lyricsScrolled) {
+        lines[activeLine].scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'center',
+          inline: 'center'
+        });
       }
-    }
-
-    // 切换播放/暂停
-    function togglePlay() {
-      if (!currentSongId) return;
       
-      if (audio.paused) {
-        audio.play()
-          .then(() => {
-            playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
-            playerDiv.classList.add('playing');
-          })
-          .catch(err => {
-            console.error('播放失败:', err);
-          });
-      } else {
-        audio.pause();
-        playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
-        playerDiv.classList.remove('playing');
+      // 更新底部歌词预览
+      if (activeLine !== null && lines[activeLine]) {
+        document.getElementById('mini-lyrics').textContent = lines[activeLine].textContent;
       }
     }
 
-    // 格式化时间
-    function formatTime(seconds) {
-      const mins = Math.floor(seconds / 60);
-      const secs = Math.floor(seconds % 60);
-      return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
-    }
-
-    // 更新播放进度
-    function updateProgress() {
-      if (audio.duration) {
-        const progressPercent = (audio.currentTime / audio.duration) * 100;
-        progressBar.style.width = `${progressPercent}%`;
-        currentTimeEl.textContent = formatTime(audio.currentTime);
-      }
-      updateLyrics();
-    }
-
-    // 更新总时长
-    function updateTotalTime() {
-      totalTimeEl.textContent = formatTime(audio.duration || 240);
-    }
-
-    // 处理进度条点击
-    function handleProgressClick(e) {
-      const rect = progressContainer.getBoundingClientRect();
-      const clickX = e.clientX - rect.left;
-      const width = rect.width;
-      const percent = clickX / width;
-      audio.currentTime = audio.duration * percent;
-    }
+    // 监听歌词滚动
+    lyricsDiv.addEventListener('scroll', () => {
+      lyricsScrolled = true;
+      if (lyricsScrollTimer) clearTimeout(lyricsScrollTimer);
+      lyricsScrollTimer = setTimeout(() => {
+        lyricsScrolled = false;
+      }, 2000);
+    });
 
     // 初始化
     init();
