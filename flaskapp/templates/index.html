@@ -1,65 +1,148 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no" />
     <title>在线音乐播放器</title>
     <style>
-        /* 保持原有的样式，只做少量调整 */
+        html {
+            font-size: 16px;
+            -webkit-text-size-adjust: 100%;
+        }
         body {
             font-family: Arial, sans-serif;
             max-width: 800px;
+            width: 100%;
             margin: 0 auto;
             padding: 20px;
+            box-sizing: border-box;
+            background: #fff;
+            color: #333;
         }
         #search {
             width: 100%;
-            padding: 10px;
+            padding: 12px 15px;
             margin-bottom: 20px;
+            font-size: 1rem;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
         }
         #song-list {
             list-style: none;
             padding: 0;
             max-height: 400px;
             overflow-y: auto;
+            -webkit-overflow-scrolling: touch; /* iOS 滚动优化 */
+            margin: 0;
+            border: 1px solid #eee;
+            border-radius: 6px;
         }
         #song-list li {
-            padding: 10px;
+            padding: 12px 15px;
             border-bottom: 1px solid #eee;
             cursor: pointer;
+            font-size: 1rem;
+            user-select: none;
         }
-        #song-list li:hover {
+        #song-list li:last-child {
+            border-bottom: none;
+        }
+        #song-list li:hover,
+        #song-list li:active {
             background-color: #f5f5f5;
         }
         #player {
             margin-top: 20px;
             padding: 20px;
             background: #f9f9f9;
+            border-radius: 8px;
+            box-sizing: border-box;
+        }
+        #now-playing {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: #222;
+            word-break: break-word;
+        }
+        audio {
+            width: 100%;
+            outline: none;
+            border-radius: 6px;
+            margin-bottom: 10px;
+        }
+        #player > div > button {
+            font-size: 1rem;
+            padding: 10px 20px;
+            margin: 0 5px;
             border-radius: 5px;
+            border: 1px solid #ccc;
+            background-color: #fff;
+            cursor: pointer;
+            user-select: none;
+            transition: background-color 0.2s ease;
+            touch-action: manipulation;
+        }
+        #player > div > button:hover,
+        #player > div > button:active {
+            background-color: #e6e6e6;
         }
         #lyrics {
             margin-top: 20px;
             height: 300px;
             overflow-y: auto;
             text-align: center;
+            font-size: 1rem;
+            color: #666;
+            -webkit-overflow-scrolling: touch;
+            padding: 0 10px;
+            box-sizing: border-box;
         }
         .lyric-line {
             margin: 10px 0;
-            color: #666;
+            transition: color 0.3s, font-size 0.3s;
         }
         .lyric-line.active {
             color: #000;
             font-weight: bold;
-            font-size: 1.2em;
+            font-size: 1.2rem;
+        }
+
+        /* 移动端媒体查询 */
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+            #player {
+                padding: 15px;
+            }
+            #song-list li {
+                font-size: 1rem;
+                padding: 12px 10px;
+            }
+            #lyrics {
+                height: 200px;
+                font-size: 1rem;
+            }
+            #player > div > button {
+                padding: 12px 18px;
+                font-size: 1.1rem;
+                margin: 0 3px;
+            }
+            #now-playing {
+                font-size: 1.1rem;
+                margin-bottom: 8px;
+            }
         }
     </style>
 </head>
 <body>
     <h1>在线音乐播放器</h1>
-    <input type="text" id="search" placeholder="搜索歌曲或歌手...">
-    
+    <input type="text" id="search" placeholder="搜索歌曲或歌手..." />
+
     <ul id="song-list"></ul>
-    
+
     <div id="player" style="display: none;">
         <h2 id="now-playing"></h2>
         <audio id="audio" controls></audio>
@@ -112,23 +195,23 @@
         // 播放歌曲
         function playSong(index) {
             if (index < 0 || index >= songs.length) return;
-            
+
             currentSongIndex = index;
             const song = songs[currentSongIndex];
-            
+
             nowPlaying.textContent = `${song.title} - ${song.artist}`;
             audio.src = `/play/${song.song_id}`;
 
             playerDiv.style.display = 'block';
-            
+
             // 加载歌词
-           fetch(`/lyric/${song.song_id}`)
+            fetch(`/lyric/${song.song_id}`)
                 .then(res => res.text())
                 .then(text => {
                     lyrics = parseLyrics(text);
                     renderLyrics();
                 });
-            
+
             if (isPlaying) {
                 audio.play();
             }
@@ -139,7 +222,7 @@
             const lines = text.split('\n');
             const result = [];
             const timeRegex = /\[(\d{2}):(\d{2})\.(\d{2,3})\]/;
-            
+
             for (const line of lines) {
                 const match = timeRegex.exec(line);
                 if (match) {
@@ -153,7 +236,7 @@
                     }
                 }
             }
-            
+
             return result;
         }
 
@@ -173,7 +256,7 @@
         function updateLyrics() {
             const currentTime = audio.currentTime;
             const lines = lyricsDiv.querySelectorAll('.lyric-line');
-            
+
             let activeLine = null;
             for (let i = 0; i < lyrics.length; i++) {
                 if (i < lyrics.length - 1) {
@@ -185,11 +268,11 @@
                     activeLine = i;
                 }
             }
-            
+
             lines.forEach((line, index) => {
                 line.classList.toggle('active', index === activeLine);
             });
-            
+
             if (activeLine !== null) {
                 lines[activeLine].scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
