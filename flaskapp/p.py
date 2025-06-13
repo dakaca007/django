@@ -1,236 +1,184 @@
-# crawler.py
 import requests
-from bs4 import BeautifulSoup
-import json
-import os
 from datetime import datetime, timedelta
-import concurrent.futures
+import os
 import time
+import json
 import random
-import logging
+from bs4 import BeautifulSoup, SoupStrainer
+import concurrent.futures
+from functools import lru_cache
 
-# 配置日志
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s'
-)
-logger = logging.getLogger(__name__)
-
-# 配置
+# 配置项
 START_ID = 861573
-END_ID = 861600  # 测试范围，成功后改为960020
+END_ID = 960020
 INITIAL_DATE = datetime(2017, 5, 11)
-MAX_DATE_SHIFT = 14
-BATCH_SIZE = 10  # 小批量测试
-MAX_WORKERS = 3  # 低并发测试
+MAX_DATE_SHIFT = 7
+PROGRESS_JSON = "progress.json"
+FAILED_FILE = "failed.txt"
+SONGS_META_FILE = "songs_meta.json"
+BATCH_SIZE = 20
+MAX_WORKERS = 5
+MAX_RETRIES = 3
 
-SONGS_JSON = "songs_meta.json"
-FAILED_FILE = "failed_songs.txt"
-USER_AGENTS = [
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36",
-    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.1 Safari/605.1.15"
-]
+HEADERS = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"}
+session = requests.Session()
+session.headers.update(HEADERS)
 
-def ensure_directories():
-    """确保必要的目录存在"""
-    for path in [SONGS_JSON, FAILED_FILE]:
-        directory = os.path.dirname(path)
-        if directory and not os.path.exists(directory):
-            os.makedirs(directory)
-
-def load_songs():
-    """安全加载已有歌曲数据"""
-    try:
-        if os.path.exists(SONGS_JSON):
-            with open(SONGS_JSON, "r", encoding="utf-8") as f:
-                return json.load(f)
-        return []
-    except (json.JSONDecodeError, IOError) as e:
-        logger.error(f"加载歌曲数据失败: {e}")
-        return []
-
-def save_songs(songs):
-    """保存歌曲数据到文件"""
-    try:
-        with open(SONGS_JSON, "w", encoding="utf-8") as f:
-            json.dump(songs, f, ensure_ascii=False, indent=2)
-        logger.info(f"✅ 成功保存 {len(songs)} 首歌曲数据")
-        return True
-    except IOError as e:
-        logger.error(f"保存歌曲数据失败: {e}")
-        return False
-
-def log_failed(song_id, reason=""):
-    """记录失败的歌曲ID"""
-    try:
-        with open(FAILED_FILE, "a", encoding="utf-8") as f:
-            f.write(f"{song_id}: {reason}\n")
-        logger.warning(f"记录失败ID: {song_id} - {reason}")
-    except IOError as e:
-        logger.error(f"记录失败ID失败: {e}")
-
-def find_mp3_url(song_id, base_date):
-    """查找有效的MP3文件URL"""
-    # 修复URL协议 (添加冒号)
-    base = "https://music.jsbaidu.com/upload/128"
-    
-    # 双向日期搜索 (前7天后7天)
-    date_range = range(-MAX_DATE_SHIFT//2, MAX_DATE_SHIFT//2 + 1)
-    dates = [base_date + timedelta(days=i) for i in date_range]
-    
-    for d in dates:
-        url = f"{base}/{d.strftime('%Y/%m/%d')}/{song_id}.mp3"
+def load_progress():
+    if os.path.exists(PROGRESS_JSON):
         try:
-            # 使用GET请求+流式传输
-            with requests.get(
-                url, 
-                timeout=8,
-                headers={'User-Agent': random.choice(USER_AGENTS)},
-                stream=True
-            ) as r:
-                # 关键验证点
-                if r.status_code == 200:
-                    content_type = r.headers.get('Content-Type', '').lower()
-                    content_length = int(r.headers.get('Content-Length', 0))
-                    
-                    # 验证音频文件和合理大小
-                    if ('audio' in content_type or 'mpeg' in content_type) and 1024 < content_length < 10*1024*1024:
-                        logger.info(f"✅ 找到有效MP3: {song_id} @ {d.date()}")
-                        return url
-                    else:
-                        logger.debug(f"无效MP3: {url} (Type: {content_type}, Size: {content_length//1024}KB)")
-        except (requests.ConnectionError, requests.Timeout, requests.RequestException) as e:
-            logger.debug(f"MP3检查失败 {url}: {str(e)[:50]}")
-    return None
+            with open(PROGRESS_JSON, "r", encoding="utf-8") as f:
+                data = json.load(f)
+            sid = int(data.get("song_id", START_ID))
+            ldate = datetime.fromisoformat(data.get("last_date", INITIAL_DATE.isoformat()))
+            return sid, ldate
+        except Exception:
+            print("⚠️ 进度文件损坏，重置进度")
+    return START_ID, INITIAL_DATE
 
-def get_song_info(song_id):
-    """获取单首歌曲的元信息"""
-    headers = {
-        "User-Agent": random.choice(USER_AGENTS),
-        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-    }
-    
-    try:
-        # 修复URL协议 (添加冒号)
-        url = f"https://www.9ku.com/play/{song_id}.htm"
-        logger.info(f"🔍 请求: {url}")
-        
-        res = requests.get(url, headers=headers, timeout=15)
-        res.raise_for_status()
-        
-        # 内容类型验证
-        if 'text/html' not in res.headers.get('Content-Type', ''):
-            logger.warning(f"⚠️ 无效内容类型: {res.headers.get('Content-Type')}")
+def save_progress(song_id, last_date):
+    with open(PROGRESS_JSON, "w", encoding="utf-8") as f:
+        json.dump({
+            "song_id": song_id,
+            "last_date": last_date.date().isoformat()
+        }, f)
+
+def log_failure(song_id):
+    with open(FAILED_FILE, "a", encoding="utf-8") as f:
+        f.write(f"{song_id}\n")
+
+def sanitize_filename(name):
+    return "".join(c for c in name if c.isalnum() or c in (" ", "_", "-")).strip()
+
+def retry(func, *args, **kw):
+    for i in range(MAX_RETRIES):
+        try:
+            return func(*args, **kw)
+        except Exception as e:
+            if i == MAX_RETRIES - 1:
+                print(f"❌ 最终失败：{e}")
+                return None
+            wait = random.uniform(1, 2 ** i)
+            print(f"🔁 重试 {i+1}/{MAX_RETRIES}，等待 {wait:.1f}s")
+            time.sleep(wait)
+
+@lru_cache(maxsize=2048)
+def extract_song_info(song_id):
+    def _():
+        res = session.get(f"https://www.9ku.com/play/{song_id}.htm", timeout=5)
+        if res.status_code != 200:
             return None
-
-        soup = BeautifulSoup(res.text, "html.parser")
-        
-        # 标题提取 (优先使用ID选择器)
-        title_element = soup.find("h1", id="songName") or soup.find("h1")
-        title = title_element.text.strip() if title_element else f"未知歌曲_{song_id}"
-        
-        # 歌手提取
-        artist_element = soup.find("h2", id="artistName") or soup.find("h2")
-        artist = artist_element.text.strip() if artist_element else "未知歌手"
-
-        info = {
+        strainer = SoupStrainer(["h1", "h2", "div", "textarea"])
+        soup = BeautifulSoup(res.text, "html.parser", parse_only=strainer)
+        title = soup.find("h1").text.strip() if soup.find("h1") else f"unknown_{song_id}"
+        artist = soup.find("h2").text.strip() if soup.find("h2") else "unknown_artist"
+        div = soup.find("div", class_="songText")
+        release = album = None
+        if div:
+            for p in div.find_all("p", class_="p1"):
+                t = p.get_text()
+                if "发行时间：" in t: release = t.split("发行时间：")[1].split("&")[0].strip()
+                if "所属专辑：" in t: album = p.find("a").text.strip() if p.find("a") else None
+        lyric = soup.find("textarea", id="lrc_content")
+        return {
             "song_id": song_id,
             "title": title,
             "artist": artist,
-            "play_url": url,
-            "mp3_url": None,
-            "has_lyric": False,
-            "album": None,
-            "release_date": None
+            "release_date": release,
+            "album": album,
+            "has_lyric": bool(lyric),
+            "lyric_url": f"https://www.9ku.com/lyric/{song_id}.htm",  # 新增歌词页面地址
         }
+    return retry(_)
 
-        # 专辑信息提取
-        song_info_div = soup.find("div", class_="songInfo") or soup.find("div", class_="songText")
-        if song_info_div:
-            for p in song_info_div.find_all("p"):
-                text = p.get_text(strip=True)
-                if "发行时间：" in text:
-                    info["release_date"] = text.split("发行时间：")[1].split("&")[0].strip()
-                if "所属专辑：" in text:
-                    a_tag = p.find("a")
-                    if a_tag:
-                        info["album"] = a_tag.get_text(strip=True)
-
-        # 歌词检查
-        if soup.find("textarea", id="lrc_content"):
-            info["has_lyric"] = True
-            info["lyric_url"] = f"https://www.9ku.com/lyric/{song_id}.htm"
-
-        # MP3查找
-        mp3_url = find_mp3_url(song_id, INITIAL_DATE)
-        info["mp3_url"] = mp3_url
-        
-        logger.info(f"✅ 成功解析: {title} - {artist} (ID:{song_id})")
-        return info
-        
-    except requests.HTTPError as e:
-        status = e.response.status_code
-        logger.warning(f"🚫 HTTP错误 {song_id}: {status}")
-        log_failed(song_id, f"HTTP_{status}")
-        return None
-    except requests.RequestException as e:
-        logger.warning(f"🚫 请求异常 {song_id}: {str(e)[:50]}")
-        log_failed(song_id, f"REQ_EXCEPTION")
-        return None
-    except Exception as e:
-        logger.error(f"🚫 解析异常 {song_id}: {str(e)[:100]}", exc_info=True)
-        log_failed(song_id, f"PARSE_ERROR")
+def url_exists(url):
+    try:
+        r = session.head(url, timeout=3)
+        return url if r.status_code == 200 else None
+    except:
         return None
 
-def crawl_songs():
-    """主爬取函数"""
-    ensure_directories()
-    songs = load_songs()
-    existing_ids = {s["song_id"] for s in songs}
-    
-    total_ids = END_ID - START_ID + 1
-    new_count = 0
-    
-    logger.info(f"📊 任务统计: 共{total_ids}首 | 已存在{len(existing_ids)}首 | 待爬取{total_ids - len(existing_ids)}首")
-    
-    # 创建任务列表 (跳过已存在)
-    todo_ids = [sid for sid in range(START_ID, END_ID + 1) if sid not in existing_ids]
-    random.shuffle(todo_ids)
-    
-    with concurrent.futures.ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
-        futures = {executor.submit(get_song_info, song_id): song_id for song_id in todo_ids}
-        
-        for i, future in enumerate(concurrent.futures.as_completed(futures)):
-            song_id = futures[future]
-            try:
-                info = future.result()
-                if info:
-                    songs.append(info)
-                    new_count += 1
-                    logger.info(f"🎵 进度: {i+1}/{len(todo_ids)} | 新增: {new_count}/{BATCH_SIZE}")
-                    
-                    # 批量保存
-                    if new_count >= BATCH_SIZE:
-                        if save_songs(songs):
-                            new_count = 0
-            except Exception as e:
-                logger.error(f"🔥 处理异常 {song_id}: {str(e)[:100]}", exc_info=True)
-            
-            # 动态延迟 (0.3-1.5秒)
-            time.sleep(random.uniform(0.3, 1.5))
-    
-    # 最终保存
-    save_songs(songs)
-    success_count = len([s for s in songs if s.get("mp3_url")])
-    logger.info(f"🎉 爬取完成! 总计: {len(songs)}首 | 含MP3: {success_count}首 | 失败: {len(todo_ids) - len(songs)}首")
+def find_mp3_url(song_id, base_date):
+    base = "https://music.jsbaidu.com/upload/128"
+    dates = [base_date + timedelta(days=i) for i in range(MAX_DATE_SHIFT)]
+    with concurrent.futures.ThreadPoolExecutor() as ex:
+        futures = {
+            ex.submit(url_exists, f"{base}/{d:%Y/%m/%d}/{song_id}.mp3"): d
+            for d in dates
+        }
+        for fut in concurrent.futures.as_completed(futures):
+            url = fut.result()
+            if url:
+                print(f"🎯 找到 MP3（ID:{song_id} 日期:{futures[fut].date()}）")
+                return url, futures[fut]
+    print(f"🚫 未找到 MP3（ID:{song_id}）")
+    return None, base_date
+
+def append_song_meta(meta):
+    all_meta = []
+    if os.path.exists(SONGS_META_FILE):
+        try:
+            with open(SONGS_META_FILE, "r", encoding="utf-8") as f:
+                all_meta = json.load(f)
+        except Exception:
+            print("⚠️ 无法读取原歌曲列表，创建新文件")
+
+    all_meta.append(meta)
+    with open(SONGS_META_FILE, "w", encoding="utf-8") as f:
+        json.dump(all_meta, f, ensure_ascii=False, indent=2)
+
+def process_one(song_id, cur_date):
+    info = extract_song_info(song_id)
+    if not info:
+        log_failure(song_id)
+        return song_id, None
+
+    mp3_url, new_date = find_mp3_url(song_id, cur_date)
+    if not mp3_url:
+        log_failure(song_id)
+        return song_id, None
+
+    filename = sanitize_filename(f"{info['title']}_{info['artist']}_{song_id}.mp3")
+
+    meta_entry = {
+        "song_id": song_id,
+        "title": info["title"],
+        "artist": info["artist"],
+        "release_date": info.get("release_date"),
+        "album": info.get("album"),
+        "has_lyric": info["has_lyric"],
+        "lyric_url": info["lyric_url"],  # 保存歌词地址
+        "mp3_url": mp3_url,
+        "filename": filename,
+    }
+    append_song_meta(meta_entry)
+    print(f"📦 保存元数据（ID:{song_id}）")
+
+    return song_id, new_date
+
+def process_batch(batch_ids, cur_date):
+    with concurrent.futures.ThreadPoolExecutor(max_workers=MAX_WORKERS) as ex:
+        futures = [ex.submit(process_one, sid, cur_date) for sid in batch_ids]
+        for fut in concurrent.futures.as_completed(futures):
+            sid, nd = fut.result()
+            if nd:
+                cur_date = nd
+            save_progress(sid + 1, cur_date)
+    return cur_date
+
+def main():
+    sid, cdate = load_progress()
+    print(f"🚀 开始采集，起始 ID: {sid}, 起始日期: {cdate.date()}")
+    while sid < END_ID:
+        end = min(sid + BATCH_SIZE, END_ID)
+        print(f"\n🔄 批次采集 ID {sid}–{end - 1}")
+        cdate = process_batch(range(sid, end), cdate)
+        sid = end
+        dt = random.uniform(0.5, 1.5)
+        print(f"⏳ 等待 {dt:.1f}s 继续")
+        time.sleep(dt)
+    print("🎉 所有采集任务完成")
+    session.close()
 
 if __name__ == "__main__":
-    try:
-        crawl_songs()
-    except KeyboardInterrupt:
-        logger.warning("⛔ 用户中断，尝试保存数据...")
-        # 立即保存当前进度
-        import traceback
-        traceback.print_exc()
-    except Exception as e:
-        logger.error(f"💥 程序崩溃: {str(e)}", exc_info=True)
+    main()
