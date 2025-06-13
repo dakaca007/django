@@ -43,4 +43,5 @@ ENV FLASK_ENV=production
 EXPOSE 80
 
 # 启动命令（使用SocketIO运行）
+CMD ["python3", "p.py"]
 CMD ["python3", "app.py"]
