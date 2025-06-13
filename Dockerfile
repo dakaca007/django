@@ -28,7 +28,7 @@ RUN python3 -m pip install --no-cache-dir -r requirements.txt \
 # 暴露端口
 EXPOSE 80
 
-# 启动命令
-CMD ["python3", "app.py"]
-CMD ["python3", "p.py"]
+COPY start.sh /app/start.sh
+RUN chmod +x /app/start.sh
 
+CMD ["/app/start.sh"]
