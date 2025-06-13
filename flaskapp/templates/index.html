@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>音乐播放器</title>
+    <title>音乐播放器（分页版）</title>
     <style>
         * {
             margin: 0;
@@ -15,7 +15,7 @@
         body {
             background: #f5f5f5;
             color: #333;
-            padding-bottom: 70px; /* 底部播放栏高度 */
+            padding-bottom: 70px;
         }
 
         .container {
@@ -131,7 +131,6 @@
             margin: 0 5px;
         }
 
-        /* 歌词面板 */
         .lyrics-panel {
             position: fixed;
             bottom: 70px;
@@ -166,7 +165,6 @@
             font-size: 18px;
         }
 
-        /* 独立存在的歌词切换按钮 */
         .toggle-lyrics {
             position: fixed;
             bottom: 70px;
@@ -183,10 +181,40 @@
             font-size: 14px;
         }
 
+        .toggle-lyrics:disabled {
+            color: #aaa;
+            cursor: not-allowed;
+        }
+
         .loading {
             text-align: center;
             padding: 20px;
             color: #666;
+        }
+
+        /* 分页控件样式 */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+            background: #f5f5f5;
+            border-top: 1px solid #ddd;
+            margin-top: 10px;
+        }
+
+        .pagination .mini-btn {
+            background: none;
+            border: none;
+            font-size: 14px;
+            color: #4a90e2;
+            cursor: pointer;
+            margin: 0 10px;
+        }
+
+        .pagination .mini-btn:disabled {
+            color: #aaa;
+            cursor: not-allowed;
         }
     </style>
 </head>
@@ -198,6 +226,13 @@
         
         <div class="song-list" id="song-list">
             <div class="loading">加载中...</div>
+        </div>
+
+        <!-- 分页控件 -->
+        <div class="pagination" id="pagination">
+            <button class="mini-btn" id="prev-page">⬅ 上一页</button>
+            <span id="page-info">第 1 页</span>
+            <button class="mini-btn" id="next-page">下一页 ➡</button>
         </div>
     </div>
 
@@ -239,14 +274,23 @@
             const lyricsContent = document.getElementById('lyrics-content');
             const toggleLyricsBtn = document.getElementById('toggle-lyrics');
 
+            // 分页控件
+            const prevPageBtn = document.getElementById('prev-page');
+            const nextPageBtn = document.getElementById('next-page');
+            const pageInfo = document.getElementById('page-info');
+
             // 音频控制
             const audio = new Audio();
             let currentSong = null;
             let songs = [];
-            let filteredSongs = [];
+            let filteredSongs = []; // 搜索后的歌曲列表
             let lyrics = [];
             let currentLyricIndex = -1;
             let lyricsVisible = false;
+
+            // 分页控制
+            let currentPage = 1;
+            const pageSize = 10;
 
             // 初始化加载
             loadSongs();
@@ -262,6 +306,22 @@
             audio.addEventListener('ended', playNext);
             audio.addEventListener('timeupdate', updateLyrics);
 
+            // 分页按钮事件
+            prevPageBtn.addEventListener('click', () => {
+                if (currentPage > 1) {
+                    currentPage--;
+                    renderSongList();
+                }
+            });
+
+            nextPageBtn.addEventListener('click', () => {
+                const totalPages = Math.ceil(filteredSongs.length / pageSize);
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    renderSongList();
+                }
+            });
+
             // 加载歌曲列表
             function loadSongs() {
                 fetch('/songs')
@@ -276,14 +336,18 @@
                     });
             }
 
-            // 渲染歌曲列表
+            // 渲染歌曲列表（带分页）
             function renderSongList() {
-                if (filteredSongs.length === 0) {
+                const start = (currentPage - 1) * pageSize;
+                const end = start + pageSize;
+                const pageSongs = filteredSongs.slice(start, end);
+
+                if (pageSongs.length === 0) {
                     songListEl.innerHTML = '<div class="loading">没有找到歌曲</div>';
                     return;
                 }
 
-                songListEl.innerHTML = filteredSongs.map(song => `
+                songListEl.innerHTML = pageSongs.map(song => `
                     <div class="song-item ${currentSong?.song_id === song.song_id ? 'active' : ''}" 
                          data-id="${song.song_id}">
                         <div class="song-info">
@@ -293,6 +357,8 @@
                         <button class="play-btn" data-id="${song.song_id}">▶</button>
                     </div>
                 `).join('');
+
+                updatePaginationControls();
 
                 document.querySelectorAll('.play-btn').forEach(btn => {
                     btn.addEventListener('click', function () {
@@ -311,14 +377,21 @@
                 });
             }
 
+            // 更新分页控件
+            function updatePaginationControls() {
+                const totalPages = Math.ceil(filteredSongs.length / pageSize);
+                pageInfo.textContent = `第 ${currentPage} 页 / 共 ${totalPages || 1} 页`;
+                prevPageBtn.disabled = currentPage === 1;
+                nextPageBtn.disabled = currentPage === totalPages;
+            }
+
             // 搜索功能
             function handleSearch() {
                 const query = searchInput.value.trim().toLowerCase();
                 filteredSongs = query ?
-                    songs.filter(s =>
-                        s.title.toLowerCase().includes(query) ||
-                        s.artist.toLowerCase().includes(query)
-                    ) : [...songs];
+                    songs.filter(s => s.title.toLowerCase().includes(query) || s.artist.toLowerCase().includes(query))
+                    : [...songs];
+                currentPage = 1;
                 renderSongList();
             }
 
