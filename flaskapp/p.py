@@ -1,3 +1,4 @@
+
 import requests
 from datetime import datetime, timedelta
 import os
@@ -13,9 +14,9 @@ import tempfile
 import shutil
 
 # 配置项
-START_ID = 1
+START_ID = 860000
 END_ID = 1060020
-INITIAL_DATE = datetime(2010, 3, 16)  # 默认初始日期
+INITIAL_DATE = datetime(2017, 3, 16)
 MAX_DATE_SHIFT = 7
 PROGRESS_JSON = "progress.json"
 FAILED_FILE = "failed.txt"
@@ -31,62 +32,17 @@ session.headers.update(HEADERS)
 # 线程安全的队列，存放待写入的元数据
 meta_queue = queue.Queue()
 
-def brute_force_date(song_id, start_date, max_days=365 * 3):
-    """暴力测试找到ID对应的合理日期"""
-    base_url = "https://music.jsbaidu.com/upload/128"
-    
-    # 向前测试（日期递增，适用于更大的song_id）
-    for i in range(max_days):
-        test_date = start_date + timedelta(days=i)
-        if test_date > datetime.now():
-            continue
-        url = f"{base_url}/{test_date:%Y/%m/%d}/{song_id}.mp3"
-        try:
-            r = session.head(url, timeout=2)
-            if r.status_code == 200:
-                print(f"🎯 暴力测试成功 (ID:{song_id} 日期:{test_date.date()})")
-                return test_date
-        except:
-            continue
-    
-    # 向后测试（日期递减，适用于更小的song_id）
-    for i in range(max_days):
-        test_date = start_date - timedelta(days=i)
-        url = f"{base_url}/{test_date:%Y/%m/%d}/{song_id}.mp3"
-        try:
-            r = session.head(url, timeout=2)
-            if r.status_code == 200:
-                print(f"🎯 暴力测试成功 (ID:{song_id} 日期:{test_date.date()})")
-                return test_date
-        except:
-            continue
-    
-    print(f"⚠️ 暴力测试失败 (ID:{song_id}) 使用初始日期")
-    return start_date
-
 def load_progress():
-    """加载进度，自动探测日期关系"""
     if os.path.exists(PROGRESS_JSON):
         try:
             with open(PROGRESS_JSON, "r", encoding="utf-8") as f:
                 data = json.load(f)
             sid = int(data.get("song_id", START_ID))
-            
-            # 尝试加载保存的日期
-            ldate_str = data.get("last_date")
-            if ldate_str:
-                try:
-                    ldate = datetime.fromisoformat(ldate_str)
-                    return sid, ldate
-                except ValueError:
-                    pass
-        except Exception as e:
-            print(f"⚠️ 进度文件错误: {e}，重新探测日期")
-    
-    # 如果没有进度文件或文件损坏，执行暴力测试探测日期
-    print("🔍 无进度文件或文件损坏，自动探测起始日期")
-    detected_date = brute_force_date(START_ID, INITIAL_DATE)
-    return START_ID, detected_date
+            ldate = datetime.fromisoformat(data.get("last_date", INITIAL_DATE.isoformat()))
+            return sid, ldate
+        except Exception:
+            print("⚠️ 进度文件损坏，重置进度")
+    return START_ID, INITIAL_DATE
 
 def save_progress(song_id, last_date):
     try:
@@ -109,7 +65,6 @@ def sanitize_filename(name):
     return "".join(c for c in name if c.isalnum() or c in (" ", "_", "-")).strip()
 
 def retry(func, *args, **kw):
-    """带重试机制的请求包装器"""
     for i in range(MAX_RETRIES):
         try:
             return func(*args, **kw)
@@ -123,7 +78,6 @@ def retry(func, *args, **kw):
 
 @lru_cache(maxsize=2048)
 def extract_song_info(song_id):
-    """提取歌曲元数据"""
     def _():
         res = session.get(f"https://www.9ku.com/play/{song_id}.htm", timeout=5)
         if res.status_code != 200:
@@ -152,7 +106,6 @@ def extract_song_info(song_id):
     return retry(_)
 
 def url_exists(url):
-    """检查URL是否存在"""
     try:
         r = session.head(url, timeout=3)
         return url if r.status_code == 200 else None
@@ -160,7 +113,6 @@ def url_exists(url):
         return None
 
 def find_mp3_url(song_id, base_date):
-    """寻找MP3文件URL"""
     base = "https://music.jsbaidu.com/upload/128"
     dates = [base_date + timedelta(days=i) for i in range(MAX_DATE_SHIFT)]
     with concurrent.futures.ThreadPoolExecutor() as ex:
@@ -177,7 +129,6 @@ def find_mp3_url(song_id, base_date):
     return None, base_date
 
 def safe_write_json(filename, data):
-    """安全写入JSON文件"""
     tmpfd, tmpname = tempfile.mkstemp(suffix=".tmp", prefix="tmp_")
     try:
         with os.fdopen(tmpfd, "w", encoding="utf-8") as f:
@@ -189,7 +140,6 @@ def safe_write_json(filename, data):
         raise
 
 def meta_writer_thread(stop_event):
-    """后台线程，负责写入元数据文件"""
     all_meta = []
     if os.path.exists(SONGS_META_FILE):
         try:
@@ -210,14 +160,6 @@ def meta_writer_thread(stop_event):
             print(f"❌ 写入元数据时异常: {e}")
 
 def process_one(song_id, cur_date):
-    """处理单个歌曲ID"""
-    # 当处理新ID时检查cur_date是否合理
-    test_url = f"https://music.jsbaidu.com/upload/128/{cur_date:%Y/%m/%d}/{song_id}.mp3"
-    r = session.head(test_url, timeout=2)
-    if r.status_code != 200:
-        print(f"⚠️ 日期校准 {cur_date.date()} 可能已过期，重新探测")
-        cur_date = brute_force_date(song_id, cur_date)
-
     info = extract_song_info(song_id)
     if not info:
         log_failure(song_id)
@@ -232,12 +174,12 @@ def process_one(song_id, cur_date):
 
     meta_entry = {
         "song_id": song_id,
-        "title": info['title'],
-        "artist": info['artist'],
-        "release_date": info.get('release_date'),
-        "album": info.get('album'),
-        "has_lyric": info['has_lyric'],
-        "lyric_url": info['lyric_url'],  # 保存歌词地址
+        "title": info["title"],
+        "artist": info["artist"],
+        "release_date": info.get("release_date"),
+        "album": info.get("album"),
+        "has_lyric": info["has_lyric"],
+        "lyric_url": info["lyric_url"],  # 保存歌词地址
         "mp3_url": mp3_url,
         "filename": filename,
     }
@@ -248,7 +190,6 @@ def process_one(song_id, cur_date):
     return song_id, new_date
 
 def process_batch(batch_ids, cur_date):
-    """处理一批歌曲ID"""
     with concurrent.futures.ThreadPoolExecutor(max_workers=MAX_WORKERS) as ex:
         futures = [ex.submit(process_one, sid, cur_date) for sid in batch_ids]
         for fut in concurrent.futures.as_completed(futures):
@@ -276,8 +217,6 @@ def main():
             dt = random.uniform(0.5, 1.5)
             print(f"⏳ 等待 {dt:.1f}s 继续")
             time.sleep(dt)
-    except KeyboardInterrupt:
-        print("⛔ 用户中断，保存进度后退出")
     except Exception as e:
         print(f"❌ 程序异常退出: {e}")
     finally:
