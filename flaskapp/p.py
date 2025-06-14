@@ -13,9 +13,9 @@ import tempfile
 import shutil
 
 # 配置项
-START_ID = 860000
+START_ID = 1
 END_ID = 1060020
-INITIAL_DATE = datetime(2017, 3, 16)  # 默认初始日期
+INITIAL_DATE = datetime(2010, 3, 16)  # 默认初始日期
 MAX_DATE_SHIFT = 7
 PROGRESS_JSON = "progress.json"
 FAILED_FILE = "failed.txt"
