@@ -31,7 +31,41 @@ session.headers.update(HEADERS)
 # 线程安全的队列，存放待写入的元数据
 meta_queue = queue.Queue()
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 def load_progress():
+
     if os.path.exists(PROGRESS_JSON):
         try:
             with open(PROGRESS_JSON, "r", encoding="utf-8") as f:
@@ -42,6 +76,17 @@ def load_progress():
         except Exception:
             print("⚠️ 进度文件损坏，重置进度")
     return START_ID, INITIAL_DATE
+
+
+
+
+
+
+
+
+
+
+
 
 def save_progress(song_id, last_date):
     try:
@@ -64,6 +109,7 @@ def sanitize_filename(name):
     return "".join(c for c in name if c.isalnum() or c in (" ", "_", "-")).strip()
 
 def retry(func, *args, **kw):
+
     for i in range(MAX_RETRIES):
         try:
             return func(*args, **kw)
@@ -77,6 +123,7 @@ def retry(func, *args, **kw):
 
 @lru_cache(maxsize=2048)
 def extract_song_info(song_id):
+
     def _():
         res = session.get(f"https://www.9ku.com/play/{song_id}.htm", timeout=5)
         if res.status_code != 200:
@@ -105,6 +152,7 @@ def extract_song_info(song_id):
     return retry(_)
 
 def url_exists(url):
+
     try:
         r = session.head(url, timeout=3)
         return url if r.status_code == 200 else None
@@ -112,6 +160,7 @@ def url_exists(url):
         return None
 
 def find_mp3_url(song_id, base_date):
+
     base = "https://music.jsbaidu.com/upload/128"
     dates = [base_date + timedelta(days=i) for i in range(MAX_DATE_SHIFT)]
     with concurrent.futures.ThreadPoolExecutor() as ex:
@@ -128,6 +177,7 @@ def find_mp3_url(song_id, base_date):
     return None, base_date
 
 def safe_write_json(filename, data):
+
     tmpfd, tmpname = tempfile.mkstemp(suffix=".tmp", prefix="tmp_")
     try:
         with os.fdopen(tmpfd, "w", encoding="utf-8") as f:
@@ -139,6 +189,7 @@ def safe_write_json(filename, data):
         raise
 
 def meta_writer_thread(stop_event):
+
     all_meta = []
     if os.path.exists(SONGS_META_FILE):
         try:
@@ -159,6 +210,14 @@ def meta_writer_thread(stop_event):
             print(f"❌ 写入元数据时异常: {e}")
 
 def process_one(song_id, cur_date):
+
+
+
+
+
+
+
+
     info = extract_song_info(song_id)
     if not info:
         log_failure(song_id)
@@ -189,6 +248,7 @@ def process_one(song_id, cur_date):
     return song_id, new_date
 
 def process_batch(batch_ids, cur_date):
+
     with concurrent.futures.ThreadPoolExecutor(max_workers=MAX_WORKERS) as ex:
         futures = [ex.submit(process_one, sid, cur_date) for sid in batch_ids]
         for fut in concurrent.futures.as_completed(futures):
@@ -216,6 +276,8 @@ def main():
             dt = random.uniform(0.5, 1.5)
             print(f"⏳ 等待 {dt:.1f}s 继续")
             time.sleep(dt)
+
+
     except Exception as e:
         print(f"❌ 程序异常退出: {e}")
     finally:
