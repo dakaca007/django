@@ -17,7 +17,7 @@ import shutil
 START_ID = 666064
 END_ID = 860000
 INITIAL_DATE = datetime(2015, 7, 24)
-MAX_DATE_SHIFT = 7
+MAX_DATE_SHIFT = 10000
 PROGRESS_JSON = "progress.json"
 FAILED_FILE = "failed.txt"
 SONGS_META_FILE = "songs_meta.json"
