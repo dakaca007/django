@@ -1,5 +1,4 @@
-
-import requests
+import requestsMore actions
 from datetime import datetime, timedelta
 import os
 import time
@@ -13,11 +12,12 @@ import queue
 import tempfile
 import shutil
 
+
 # 配置项
 START_ID = 860000
-END_ID = 1860000
+END_ID = 1060020
 INITIAL_DATE = datetime(2017, 3, 16)
-MAX_DATE_SHIFT = 10000
+MAX_DATE_SHIFT = 7
 PROGRESS_JSON = "progress.json"
 FAILED_FILE = "failed.txt"
 SONGS_META_FILE = "songs_meta.json"
@@ -25,16 +25,11 @@ BATCH_SIZE = 20
 MAX_WORKERS = 5
 MAX_RETRIES = 3
 
+
+
 HEADERS = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"}
 session = requests.Session()
-session.headers.update(HEADERS)
-
-# 线程安全的队列，存放待写入的元数据
-meta_queue = queue.Queue()
-
-def load_progress():
-    if os.path.exists(PROGRESS_JSON):
-        try:
+@@ -37,11 +39,11 @@
             with open(PROGRESS_JSON, "r", encoding="utf-8") as f:
                 data = json.load(f)
             sid = int(data.get("song_id", START_ID))
@@ -46,11 +41,7 @@ def load_progress():
 
 def save_progress(song_id, last_date):
     try:
-        with open(PROGRESS_JSON, "w", encoding="utf-8") as f:
-            json.dump({
-                "song_id": song_id,
-                "last_date": last_date.date().isoformat()
-            }, f)
+@@ -53,67 +55,53 @@
     except Exception as e:
         print(f"❌ 保存进度失败: {e}")
 
@@ -113,37 +104,25 @@ def url_exists(url):
         return None
 
 def find_mp3_url(song_id, base_date):
-    base_128 = "https://music.jsbaidu.com/upload/128"
-    base_normal = "https://music.jsbaidu.com/upload"  # 新增不带128的base
-    
+
+    base = "https://music.jsbaidu.com/upload/128"
     dates = [base_date + timedelta(days=i) for i in range(MAX_DATE_SHIFT)]
-    
-    # 首先尝试带128的base
+
+
+
+
+
+
+
     with concurrent.futures.ThreadPoolExecutor() as ex:
         futures = {
-            ex.submit(url_exists, f"{base_128}/{d:%Y/%m/%d}/{song_id}.mp3"): d
-            for d in dates
-        }
-        for fut in concurrent.futures.as_completed(futures):
-            url = fut.result()
+            ex.submit(url_exists, f"{base}/{d:%Y/%m/%d}/{song_id}.mp3"): d
+@@ -124,108 +112,84 @@
             if url:
-                print(f"🎯 找到高清MP3（ID:{song_id} 日期:{futures[fut].date()}）")
+                print(f"🎯 找到 MP3（ID:{song_id} 日期:{futures[fut].date()}）")
                 return url, futures[fut]
-    
-    # 如果带128的找不到，尝试不带128的base
-    print(f"⚠️ 未找到高清版本，尝试标准音质（ID:{song_id}）")
-    with concurrent.futures.ThreadPoolExecutor() as ex:
-        futures = {
-            ex.submit(url_exists, f"{base_normal}/{d:%Y/%m/%d}/{song_id}.mp3"): d
-            for d in dates
-        }
-        for fut in concurrent.futures.as_completed(futures):
-            url = fut.result()
-            if url:
-                print(f"🎯 找到标准MP3（ID:{song_id} 日期:{futures[fut].date()}）")
-                return url, futures[fut]
-    
-    print(f"🚫 完全未找到MP3（ID:{song_id}）")
+
+    print(f"🚫 未找到 MP3（ID:{song_id}）")
     return None, base_date
 
 def safe_write_json(filename, data):
@@ -208,6 +187,10 @@ def process_one(song_id, cur_date):
     return song_id, new_date
 
 def process_batch(batch_ids, cur_date):
+
+
+
+
     with concurrent.futures.ThreadPoolExecutor(max_workers=MAX_WORKERS) as ex:
         futures = [ex.submit(process_one, sid, cur_date) for sid in batch_ids]
         for fut in concurrent.futures.as_completed(futures):
@@ -217,8 +200,30 @@ def process_batch(batch_ids, cur_date):
             # 这里不在每首歌保存进度，改成批量后再保存
     return cur_date
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 def main():
+
     sid, cdate = load_progress()
+
+
+
     print(f"🚀 开始采集，起始 ID: {sid}, 起始日期: {cdate.date()}")
 
     stop_event = threading.Event()
@@ -226,15 +231,26 @@ def main():
     writer.start()
 
     try:
+
         while sid < END_ID:
             end = min(sid + BATCH_SIZE, END_ID)
             print(f"\n🔄 批次采集 ID {sid}–{end - 1}")
+
             cdate = process_batch(range(sid, end), cdate)
             save_progress(end, cdate)  # 每批结束后保存进度
             sid = end
             dt = random.uniform(0.5, 1.5)
             print(f"⏳ 等待 {dt:.1f}s 继续")
             time.sleep(dt)
+
+
+
+
+
+
+
+
+
     except Exception as e:
         print(f"❌ 程序异常退出: {e}")
     finally:
@@ -245,6 +261,7 @@ def main():
 
         print("🎉 所有采集任务完成")
         session.close()
+
 
 if __name__ == "__main__":
     main()
