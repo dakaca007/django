@@ -31,6 +31,39 @@ session.headers.update(HEADERS)
 # 线程安全的队列，存放待写入的元数据
 meta_queue = queue.Queue()
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 def load_progress():
 
     if os.path.exists(PROGRESS_JSON):
@@ -43,6 +76,16 @@ def load_progress():
         except Exception:
             print("⚠️ 进度文件损坏，重置进度")
     return START_ID, INITIAL_DATE
+
+
+
+
+
+
+
+
+
+
 
 
 def save_progress(song_id, last_date):
@@ -167,6 +210,14 @@ def meta_writer_thread(stop_event):
             print(f"❌ 写入元数据时异常: {e}")
 
 def process_one(song_id, cur_date):
+
+
+
+
+
+
+
+
     info = extract_song_info(song_id)
     if not info:
         log_failure(song_id)
