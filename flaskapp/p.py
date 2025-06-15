@@ -113,19 +113,37 @@ def url_exists(url):
         return None
 
 def find_mp3_url(song_id, base_date):
-    base = "https://music.jsbaidu.com/upload/128"
+    base_128 = "https://music.jsbaidu.com/upload/128"
+    base_normal = "https://music.jsbaidu.com/upload"  # 新增不带128的base
+    
     dates = [base_date + timedelta(days=i) for i in range(MAX_DATE_SHIFT)]
+    
+    # 首先尝试带128的base
     with concurrent.futures.ThreadPoolExecutor() as ex:
         futures = {
-            ex.submit(url_exists, f"{base}/{d:%Y/%m/%d}/{song_id}.mp3"): d
+            ex.submit(url_exists, f"{base_128}/{d:%Y/%m/%d}/{song_id}.mp3"): d
             for d in dates
         }
         for fut in concurrent.futures.as_completed(futures):
             url = fut.result()
             if url:
-                print(f"🎯 找到 MP3（ID:{song_id} 日期:{futures[fut].date()}）")
+                print(f"🎯 找到高清MP3（ID:{song_id} 日期:{futures[fut].date()}）")
                 return url, futures[fut]
-    print(f"🚫 未找到 MP3（ID:{song_id}）")
+    
+    # 如果带128的找不到，尝试不带128的base
+    print(f"⚠️ 未找到高清版本，尝试标准音质（ID:{song_id}）")
+    with concurrent.futures.ThreadPoolExecutor() as ex:
+        futures = {
+            ex.submit(url_exists, f"{base_normal}/{d:%Y/%m/%d}/{song_id}.mp3"): d
+            for d in dates
+        }
+        for fut in concurrent.futures.as_completed(futures):
+            url = fut.result()
+            if url:
+                print(f"🎯 找到标准MP3（ID:{song_id} 日期:{futures[fut].date()}）")
+                return url, futures[fut]
+    
+    print(f"🚫 完全未找到MP3（ID:{song_id}）")
     return None, base_date
 
 def safe_write_json(filename, data):
