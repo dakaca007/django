@@ -3,17 +3,23 @@ from flask import Flask, jsonify, request, render_template, abort, make_response
 import requests
 import json
 import os
-
+import glob
 app = Flask(__name__)
 
-# 配置
-SONGS_JSON = "songs_meta.json"
+
 CACHE_DIR = "temp_cache"
 os.makedirs(CACHE_DIR, exist_ok=True)
 
 def load_songs():
-    with open(SONGS_JSON, "r", encoding="utf-8") as f:
-        return json.load(f)
+    all_songs = []
+    for file in glob.glob("songs_meta*.json"):
+        try:
+            with open(file, "r", encoding="utf-8") as f:
+                songs = json.load(f)
+                all_songs.extend(songs)
+        except Exception as e:
+            print(f"⚠️ 读取 {file} 出错: {e}")
+    return all_songs
 
 @app.route('/')
 def index():
