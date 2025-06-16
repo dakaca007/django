@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>音乐播放器（分页版）</title>
     <style>
         * {
@@ -216,6 +216,16 @@
             color: #aaa;
             cursor: not-allowed;
         }
+
+        .page-input {
+            width: 60px;
+            padding: 5px 8px;
+            margin: 0 5px;
+            text-align: center;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
     </style>
 </head>
 <body>
@@ -223,15 +233,17 @@
         <div class="search-box">
             <input type="text" id="search-input" placeholder="搜索歌曲或歌手...">
         </div>
-        
+
         <div class="song-list" id="song-list">
             <div class="loading">加载中...</div>
         </div>
 
-        <!-- 分页控件 -->
+        <!-- 分页控件（新增页码跳转功能） -->
         <div class="pagination" id="pagination">
             <button class="mini-btn" id="prev-page">⬅ 上一页</button>
             <span id="page-info">第 1 页</span>
+            <input type="number" id="page-input" class="page-input" min="1" placeholder="页码">
+            <button class="mini-btn" id="go-page">跳转</button>
             <button class="mini-btn" id="next-page">下一页 ➡</button>
         </div>
     </div>
@@ -278,12 +290,14 @@
             const prevPageBtn = document.getElementById('prev-page');
             const nextPageBtn = document.getElementById('next-page');
             const pageInfo = document.getElementById('page-info');
+            const pageInput = document.getElementById('page-input');
+            const goPageBtn = document.getElementById('go-page');
 
             // 音频控制
             const audio = new Audio();
             let currentSong = null;
             let songs = [];
-            let filteredSongs = []; // 搜索后的歌曲列表
+            let filteredSongs = [];
             let lyrics = [];
             let currentLyricIndex = -1;
             let lyricsVisible = false;
@@ -320,6 +334,12 @@
                     currentPage++;
                     renderSongList();
                 }
+            });
+
+            // 新增：跳转到指定页码
+            goPageBtn.addEventListener('click', handlePageJump);
+            pageInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') handlePageJump();
             });
 
             // 加载歌曲列表
@@ -383,6 +403,13 @@
                 pageInfo.textContent = `第 ${currentPage} 页 / 共 ${totalPages || 1} 页`;
                 prevPageBtn.disabled = currentPage === 1;
                 nextPageBtn.disabled = currentPage === totalPages;
+
+                // 同步输入框
+                if (pageInput) {
+                    pageInput.min = 1;
+                    pageInput.max = totalPages || 1;
+                    pageInput.value = currentPage;
+                }
             }
 
             // 搜索功能
@@ -564,6 +591,20 @@
                     clearTimeout(timeout);
                     timeout = setTimeout(() => func.apply(this, arguments), wait);
                 };
+            }
+
+            // 跳转到指定页码
+            function handlePageJump() {
+                const totalPages = Math.ceil(filteredSongs.length / pageSize);
+                let targetPage = parseInt(pageInput.value);
+
+                if (isNaN(targetPage) || targetPage < 1) targetPage = 1;
+                if (targetPage > totalPages) targetPage = totalPages;
+
+                if (targetPage !== currentPage) {
+                    currentPage = targetPage;
+                    renderSongList();
+                }
             }
         });
     </script>
