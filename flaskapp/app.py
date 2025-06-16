@@ -6,12 +6,12 @@ import os
 import glob
 app = Flask(__name__)
 
-
+all_songs = []
 CACHE_DIR = "temp_cache"
 os.makedirs(CACHE_DIR, exist_ok=True)
 
 def load_songs():
-    all_songs = []
+    
     for file in glob.glob("songs_meta*.json"):
         try:
             with open(file, "r", encoding="utf-8") as f:
