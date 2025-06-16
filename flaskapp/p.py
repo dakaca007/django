@@ -29,7 +29,6 @@ MAX_RETRIES = 3
 
 HEADERS = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"}
 session = requests.Session()
-@@ -37,11 +39,11 @@
             with open(PROGRESS_JSON, "r", encoding="utf-8") as f:
                 data = json.load(f)
             sid = int(data.get("song_id", START_ID))
@@ -41,7 +40,6 @@ session = requests.Session()
 
 def save_progress(song_id, last_date):
     try:
-@@ -53,67 +55,53 @@
     except Exception as e:
         print(f"❌ 保存进度失败: {e}")
 
@@ -117,7 +115,6 @@ def find_mp3_url(song_id, base_date):
     with concurrent.futures.ThreadPoolExecutor() as ex:
         futures = {
             ex.submit(url_exists, f"{base}/{d:%Y/%m/%d}/{song_id}.mp3"): d
-@@ -124,108 +112,84 @@
             if url:
                 print(f"🎯 找到 MP3（ID:{song_id} 日期:{futures[fut].date()}）")
                 return url, futures[fut]
