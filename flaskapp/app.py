@@ -24,6 +24,9 @@ def load_songs():
 @app.route('/')
 def index():
     return render_template('index.html')
+@app.route('/ai')
+def ai():
+    return render_template('ai.html')
 
 @app.route('/songs')
 def get_songs():
